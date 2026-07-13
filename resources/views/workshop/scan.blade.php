@@ -39,7 +39,7 @@
                 @if(!empty($scannedItem))
                     @php
                         $item = $scannedItem;
-                        $currentStatus = $item->productionStatuses->first()?->to_status ?? null;
+                        $currentStatus = $item->statusLogs->first()?->productionStatus?->code ?? null;
                         $currentSeq = 0;
                         foreach ($statuses as $s) {
                             if ($s->value === $currentStatus) {
@@ -49,7 +49,7 @@
                         }
                         $allowed = $currentStatus
                             ? \App\Enums\ProductionStatus::allowedTransitionsFrom(\App\Enums\ProductionStatus::tryFrom($currentStatus))
-                            : [\App\Enums\ProductionStatus::Received];
+                            : [\App\Enums\ProductionStatus::Terima];
                     @endphp
 
                     <div class="p-4 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-200 dark:border-green-800">
@@ -67,7 +67,7 @@
                             </div>
                             <div class="flex justify-between text-sm">
                                 <span class="text-green-700 dark:text-green-300">Status:</span>
-                                <x-ui.badge :variant="match($currentStatus) { 'picked_up' => 'success', 'ready_for_pickup' => 'success', default => 'info' }">
+                                <x-ui.badge :variant="match($currentStatus) { 'DIAMBIL' => 'success', 'SIAP' => 'success', default => 'info' }">
                                     {{ $statusLabels[$currentStatus] ?? 'Belum Diproses' }}
                                 </x-ui.badge>
                             </div>

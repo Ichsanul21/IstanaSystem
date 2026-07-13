@@ -12,7 +12,7 @@ class TrackingApiController extends Controller
     {
         $order = Order::with('customer')
             ->where('qr_token', $token)
-            ->with(['items.servicePricing.service', 'items.productionStatuses'])
+            ->with(['items.servicePricing.service', 'items.statusLogs.productionStatus'])
             ->first();
 
         if (!$order) {
@@ -39,7 +39,7 @@ class TrackingApiController extends Controller
             return response()->json(['success' => false, 'message' => 'Invalid PIN.'], 403);
         }
 
-        $order->load(['items.servicePricing.service', 'items.productionStatuses']);
+        $order->load(['items.servicePricing.service', 'items.statusLogs.productionStatus']);
 
         return response()->json([
             'success' => true,
@@ -49,10 +49,10 @@ class TrackingApiController extends Controller
 
     private function formatOrder(Order $order): array
     {
-        $statusHistory = $order->items->flatMap->productionStatuses->sortBy('created_at')->map(fn($ps) => [
-            'status' => $ps->status,
+        $statusHistory = $order->items->flatMap->statusLogs->sortBy('created_at')->map(fn($ps) => [
+            'status' => $ps->productionStatus?->name ?? '-',
             'created_at' => $ps->created_at->format('d/m/Y H:i'),
-            'note' => $ps->notes ?? null,
+            'note' => $ps->note ?? null,
         ])->toArray();
 
         return [

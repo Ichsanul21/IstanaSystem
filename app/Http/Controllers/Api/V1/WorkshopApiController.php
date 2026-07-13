@@ -20,7 +20,7 @@ class WorkshopApiController extends Controller
     public function scan($qrToken)
     {
         $orderItem = OrderItem::where('qr_token', $qrToken)
-            ->with(['service', 'order.customer', 'order.items.service', 'orderItemStatusLogs'])
+            ->with(['service', 'order.customer', 'order.items.service', 'statusLogs.productionStatus'])
             ->firstOrFail();
 
         $currentStatus = $this->workshopService->getCurrentStatus($orderItem);
@@ -36,10 +36,10 @@ class WorkshopApiController extends Controller
                         : ['code' => '', 'name' => ''],
                     'quantity' => $orderItem->quantity,
                     'current_status' => $currentStatus
-                        ? ['id' => $currentStatus->id, 'code' => $currentStatus->to_status, 'name' => $currentStatus->to_status, 'sequence' => $currentStatus->id]
+                        ? ['code' => $currentStatus->value, 'name' => $currentStatus->label(), 'sequence' => $currentStatus->sequence()]
                         : null,
-                    'next_status' => $allowedTransitions->first()
-                        ? ['id' => 0, 'code' => $allowedTransitions->first(), 'name' => $allowedTransitions->first(), 'sequence' => 0]
+                    'next_status' => !empty($allowedTransitions)
+                        ? ['code' => $allowedTransitions[0]->value, 'name' => $allowedTransitions[0]->label(), 'sequence' => $allowedTransitions[0]->sequence()]
                         : null,
                 ],
                 'order' => [
@@ -49,7 +49,7 @@ class WorkshopApiController extends Controller
                     'items' => $orderItem->order->items->map(fn($i) => [
                         'service' => ['code' => $i->service?->code ?? ''],
                         'quantity' => $i->quantity,
-                        'status' => $this->workshopService->getCurrentStatus($i)?->to_status ?? 'received',
+                        'status' => $this->workshopService->getCurrentStatus($i)?->value ?? 'Terima',
                     ]),
                 ],
             ],
@@ -64,11 +64,11 @@ class WorkshopApiController extends Controller
 
         $allowedTransitions = $this->workshopService->getAllowedTransitions($orderItem);
 
-        if ($allowedTransitions->isEmpty()) {
+        if (empty($allowedTransitions)) {
             return response()->json(['success' => false, 'message' => 'No valid next status'], 422);
         }
 
-        $nextStatus = $allowedTransitions->first();
+        $nextStatus = $allowedTransitions[0];
         $userId = $request->user()?->id ?? 1;
 
         $status = $this->transitionService->transition($orderItem, $nextStatus, $userId, $request->note);
@@ -78,9 +78,9 @@ class WorkshopApiController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
-                'new_status' => ['code' => $status->to_status, 'name' => $status->to_status, 'sequence' => $status->id],
+                'new_status' => ['code' => $nextStatus->value, 'name' => $nextStatus->label(), 'sequence' => $nextStatus->sequence()],
                 'wa_link' => $waLink ?? '',
-                'wa_required' => in_array($nextStatus, ['ready_for_pickup', 'picked_up']),
+                'wa_required' => in_array($nextStatus->value, ['SIAP', 'DIAMBIL']),
             ],
         ]);
     }
@@ -98,7 +98,7 @@ class WorkshopApiController extends Controller
         return response()->json(['data' => $queue->map(fn($item) => [
             'order_number' => $item->order?->order_number ?? '',
             'item' => (string) ($item->service?->name ?? '') . ' - ' . $item->quantity . ' kg',
-            'current_status' => $item->latestStatus?->to_status ?? 'received',
+            'current_status' => $item->statusLogs->first()?->productionStatus?->code ?? 'TERIMA',
             'customer' => $item->order?->customer?->name ?? $item->order?->customer_name ?? '',
             'elapsed_time' => $item->created_at?->diffForHumans(short: true) ?? '',
         ])]);
@@ -108,22 +108,22 @@ class WorkshopApiController extends Controller
     {
         $branchId = currentBranchId();
 
-        $totalInProduction = OrderItem::whereHas('orderItemStatusLogs')
-            ->whereDoesntHave('orderItemStatusLogs', fn($q) => $q->where('to_status', 'picked_up'))
+        $totalInProduction = OrderItem::whereHas('statusLogs')
+            ->whereDoesntHave('statusLogs.productionStatus', fn($q) => $q->where('code', 'DIAMBIL'))
             ->count();
 
-        $completedToday = OrderItem::whereHas('orderItemStatusLogs', fn($q) => $q
-            ->where('to_status', 'picked_up')
-            ->whereDate('created_at', today())
+        $completedToday = OrderItem::whereHas('statusLogs.productionStatus', fn($q) => $q
+            ->where('code', 'DIAMBIL')
+            ->whereDate('order_item_status_logs.created_at', today())
         )->count();
 
         $statusCounts = [
-            'received' => OrderItem::whereHas('orderItemStatusLogs', fn($q) => $q->where('to_status', 'received'))->count(),
-            'washed' => OrderItem::whereHas('orderItemStatusLogs', fn($q) => $q->where('to_status', 'washed'))->count(),
-            'dried' => OrderItem::whereHas('orderItemStatusLogs', fn($q) => $q->where('to_status', 'dried'))->count(),
-            'ironed' => OrderItem::whereHas('orderItemStatusLogs', fn($q) => $q->where('to_status', 'ironed'))->count(),
-            'packed' => OrderItem::whereHas('orderItemStatusLogs', fn($q) => $q->where('to_status', 'packed'))->count(),
-            'ready_for_pickup' => OrderItem::whereHas('orderItemStatusLogs', fn($q) => $q->where('to_status', 'ready_for_pickup'))->count(),
+            'TERIMA' => OrderItem::whereHas('statusLogs.productionStatus', fn($q) => $q->where('code', 'TERIMA'))->count(),
+            'CUCI' => OrderItem::whereHas('statusLogs.productionStatus', fn($q) => $q->where('code', 'CUCI'))->count(),
+            'KERING' => OrderItem::whereHas('statusLogs.productionStatus', fn($q) => $q->where('code', 'KERING'))->count(),
+            'LIPAT' => OrderItem::whereHas('statusLogs.productionStatus', fn($q) => $q->where('code', 'LIPAT'))->count(),
+            'CEK' => OrderItem::whereHas('statusLogs.productionStatus', fn($q) => $q->where('code', 'CEK'))->count(),
+            'SIAP' => OrderItem::whereHas('statusLogs.productionStatus', fn($q) => $q->where('code', 'SIAP'))->count(),
         ];
 
         return response()->json(['data' => [

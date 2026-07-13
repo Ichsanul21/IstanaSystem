@@ -2,6 +2,7 @@
 
 namespace App\Services\Order;
 
+use App\Enums\OrderStatus;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
@@ -61,7 +62,7 @@ class OrderService
             $order = Order::create(array_merge($data, [
                 'order_number' => $orderNumber,
                 'created_by' => Auth::id(),
-                'status' => 'pending',
+                'status' => OrderStatus::Pending->value,
                 'payment_status' => 'unpaid',
                 'total_amount' => 0,
                 'discount_amount' => $discountAmount,
@@ -134,7 +135,7 @@ class OrderService
             ]);
 
             if ($paymentStatus === 'paid') {
-                $order->update(['status' => 'process']);
+                $order->update(['status' => OrderStatus::Processing->value]);
             }
 
             return $payment;

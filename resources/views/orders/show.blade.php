@@ -37,12 +37,8 @@
                     <div>
                         <dt class="text-sm text-gray-500 dark:text-gray-400">Status</dt>
                         <dd>
-                            @php
-                                $s = $order->status ?? $order['status'] ?? '';
-                                $sm = ['draft' => 'gray', 'pending' => 'warning', 'processing' => 'info', 'completed' => 'success', 'cancelled' => 'danger'];
-                                $sl = ['draft' => 'Draft', 'pending' => 'Baru', 'processing' => 'Diproses', 'completed' => 'Selesai', 'cancelled' => 'Dibatalkan'];
-                            @endphp
-                            <x-ui.badge :variant="$sm[$s] ?? 'gray'">{{ $sl[$s] ?? $s }}</x-ui.badge>
+                            @php $s = $order->status ?? $order['status'] ?? ''; $os = \App\Enums\OrderStatus::tryFrom($s); @endphp
+                            <x-ui.badge :variant="$os?->color() ?? 'gray'">{{ $os?->label() ?? $s }}</x-ui.badge>
                         </dd>
                     </div>
                     <div>
@@ -114,7 +110,7 @@
                                 <div class="w-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
                             </div>
                             <div class="pb-4">
-                                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $history->to_status ?? $history['to_status'] ?? '' }}</p>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $history->productionStatus?->name ?? ($history['to_status'] ?? '') }}</p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">{{ $history->created_at ?? $history['created_at'] ?? '' }}</p>
                                 @if($history->note ?? $history['note'] ?? null)
                                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $history->note ?? $history['note'] }}</p>

@@ -9,5 +9,9 @@
   --color-dark: #000000;
   --color-lo-gray: #E5E5E5;
   --color-surface: #F5F5F5;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-info: #3B82F6;
   --font-family-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }

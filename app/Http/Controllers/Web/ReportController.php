@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\InventoryItem;
 use App\Models\Order;
+use App\Models\OrderItemStatusLog;
 use App\Models\Payment;
-use App\Models\ProductionStatus;
 use App\Models\TaxLog;
 use Illuminate\Support\Facades\DB;
 
@@ -40,9 +41,9 @@ class ReportController extends Controller
             ->when(request('date_from'), fn($q, $v) => $q->whereDate('created_at', '>=', $v))
             ->when(request('date_to'), fn($q, $v) => $q->whereDate('created_at', '<=', $v));
 
-        $totalPending = (clone $query)->where('status', 'pending')->count();
-        $totalProcessing = (clone $query)->where('status', 'processing')->count();
-        $totalCompleted = (clone $query)->where('status', 'completed')->count();
+        $totalPending = (clone $query)->where('status', OrderStatus::Pending->value)->count();
+        $totalProcessing = (clone $query)->where('status', OrderStatus::Processing->value)->count();
+        $totalCompleted = (clone $query)->where('status', OrderStatus::Completed->value)->count();
 
         $orders = $query->with('customer')->latest()->paginate(15);
 
@@ -95,14 +96,14 @@ class ReportController extends Controller
 
     public function production()
     {
-        $query = ProductionStatus::whereHas('orderItem.order', fn($q) => $q->forCurrentBranch())
+        $query = OrderItemStatusLog::whereHas('orderItem.order', fn($q) => $q->forCurrentBranch())
             ->when(request('date_from'), fn($q, $v) => $q->whereDate('created_at', '>=', $v))
             ->when(request('date_to'), fn($q, $v) => $q->whereDate('created_at', '<=', $v));
 
         $uniqueItems = (clone $query)->distinct('order_item_id')->count('order_item_id');
-        $uniqueWorkers = (clone $query)->distinct('user_id')->count('user_id');
+        $uniqueWorkers = (clone $query)->distinct('scanned_by')->count('scanned_by');
 
-        $logs = $query->with(['orderItem', 'user'])->latest()->paginate(15);
+        $logs = $query->with(['orderItem', 'scannedBy', 'productionStatus'])->latest()->paginate(15);
 
         return view('reports.production', compact('logs', 'uniqueItems', 'uniqueWorkers'));
     }

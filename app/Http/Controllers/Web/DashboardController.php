@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
 use App\Models\Order;
@@ -57,7 +58,7 @@ class DashboardController extends Controller
 
         $topCustomers = \App\Models\Customer::withSum(['orders as total_spent' => function ($q) use ($branchId) {
             $q->when($branchId, fn($qq) => $qq->where('branch_id', $branchId))
-                ->whereIn('status', ['completed', 'process']);
+                ->whereIn('status', [OrderStatus::Completed->value, OrderStatus::Processing->value]);
         }], 'grand_total')
             ->whereHas('orders', function ($q) use ($branchId) {
                 $q->when($branchId, fn($qq) => $qq->where('branch_id', $branchId));

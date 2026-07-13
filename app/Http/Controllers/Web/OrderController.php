@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\OrderRequest;
 use App\Models\Order;
@@ -64,7 +65,7 @@ class OrderController extends Controller
     {
         $order->load(['items.servicePricing.service', 'payments', 'refunds', 'customer']);
 
-        $statusTimeline = $order->items->flatMap->productionStatuses->sortBy('created_at');
+        $statusTimeline = $order->items->flatMap->statusLogs->sortBy('created_at');
 
         return view('orders.show', compact('order', 'statusTimeline'));
     }
@@ -82,7 +83,7 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         $data = $request->validate([
-            'status' => 'nullable|string|in:draft,pending,processing,completed,cancelled',
+            'status' => 'nullable|string|in:' . implode(',', array_map(fn($c) => $c->value, OrderStatus::cases())),
             'notes' => 'nullable|string|max:1000',
         ]);
 
@@ -100,7 +101,7 @@ class OrderController extends Controller
 
     public function destroy(Order $order)
     {
-        if (!in_array($order->status, ['draft', 'pending', 'cancelled'])) {
+        if (!in_array($order->status, [OrderStatus::Draft->value, OrderStatus::Pending->value, OrderStatus::Cancelled->value])) {
             return back()->withErrors(['order' => 'Only draft, pending, or cancelled orders can be deleted.']);
         }
 

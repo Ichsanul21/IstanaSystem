@@ -38,7 +38,8 @@
                 <td class="px-6 py-4 text-sm font-medium text-primary">#{{ $order->order_number }}</td>
                 <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">{{ $order->customer->name ?? '-' }}</td>
                 <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">Rp {{ number_format($order->grand_total ?? 0, 0, ',', '.') }}</td>
-                <td class="px-6 py-4"><x-ui.badge :variant="['pending' => 'warning', 'processing' => 'info', 'completed' => 'success', 'cancelled' => 'danger'][$order->status] ?? 'gray'">{{ $order->status }}</x-ui.badge></td>
+                @php $os = \App\Enums\OrderStatus::tryFrom($order->status); @endphp
+                <td class="px-6 py-4"><x-ui.badge :variant="$os?->color() ?? 'gray'">{{ $os?->label() ?? $order->status }}</x-ui.badge></td>
                 <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $order->created_at }}</td>
             </tr>
             @empty

@@ -67,10 +67,7 @@
                     <div>
                         <dt class="text-sm text-gray-500 dark:text-gray-400">Status Produksi</dt>
                         <dd>
-                            @php
-                                $psm = ['TERIMA' => 'gray', 'PILAH' => 'info', 'CUCI' => 'warning', 'KERING' => 'primary', 'LIPAT' => 'info', 'CEK' => 'info', 'SIAP' => 'success', 'DIAMBIL' => 'success'];
-                            @endphp
-                            <x-ui.badge :variant="$psm[$currentStatus] ?? 'gray'">{{ $statusLabels[$currentStatus] ?? 'Belum Diproses' }}</x-ui.badge>
+                            <x-ui.badge :variant="\App\Enums\ProductionStatus::tryFrom($currentStatus ?? '')?->color() ?? 'gray'">{{ $statusLabels[$currentStatus] ?? 'Belum Diproses' }}</x-ui.badge>
                         </dd>
                     </div>
                 </dl>

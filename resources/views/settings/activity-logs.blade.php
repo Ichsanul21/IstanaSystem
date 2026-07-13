@@ -2,7 +2,7 @@
     <x-slot:header>
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Activity Logs</h1>
-            @can('export logs')
+            @can('audit-log-access')
                 <div class="flex items-center gap-2">
                     <x-ui.button href="{{ route('admin.audit.export', 'excel') }}" variant="outline" size="sm">Export Excel</x-ui.button>
                     <x-ui.button href="{{ route('admin.audit.export', 'pdf') }}" variant="outline" size="sm">Export PDF</x-ui.button>

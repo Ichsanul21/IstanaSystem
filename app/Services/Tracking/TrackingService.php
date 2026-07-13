@@ -34,7 +34,7 @@ class TrackingService
 
     public function getOrderStatus(Order $order): array
     {
-        $order->load(['items.servicePricing.service', 'items.productionStatuses' => function ($q) {
+        $order->load(['items.servicePricing.service', 'items.statusLogs.productionStatus' => function ($q) {
             $q->latest()->take(1);
         }]);
 
@@ -43,10 +43,10 @@ class TrackingService
         $completedStatuses = 0;
 
         foreach ($items as $item) {
-            $latestStatus = $item->productionStatuses->first();
-            if ($latestStatus) {
-                $statusIndex = array_search($latestStatus->to_status, [
-                    'received', 'washed', 'dried', 'ironed', 'packed', 'ready_for_pickup', 'picked_up'
+            $latestStatus = $item->statusLogs->first();
+            if ($latestStatus && $latestStatus->productionStatus) {
+                $statusIndex = array_search($latestStatus->productionStatus->code, [
+                    'TERIMA', 'CUCI', 'KERING', 'LIPAT', 'CEK', 'SIAP', 'DIAMBIL'
                 ]);
                 $completedStatuses += $statusIndex !== false ? min($statusIndex + 1, $totalStatuses) : 0;
             }

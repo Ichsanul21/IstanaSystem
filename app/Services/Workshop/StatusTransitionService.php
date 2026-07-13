@@ -2,6 +2,7 @@
 
 namespace App\Services\Workshop;
 
+use App\Enums\OrderStatus;
 use App\Enums\ProductionStatus;
 use App\Exceptions\InvalidStatusTransitionException;
 use App\Models\Order;
@@ -84,11 +85,11 @@ class StatusTransitionService
 
         if ($allTerminal) {
             $order->update([
-                'status' => 'completed',
+                'status' => OrderStatus::Completed->value,
                 'finished_at' => $order->finished_at ?? now(),
             ]);
         } elseif ($anyProcessing) {
-            $order->update(['status' => 'process']);
+            $order->update(['status' => OrderStatus::Processing->value]);
         }
     }
 }

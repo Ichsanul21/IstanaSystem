@@ -5,8 +5,8 @@
         label="Margin Keuntungan"
         value="{{ number_format($profitMargin, 1, ',', '.') }}%"
         icon='<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/></svg>'
-        :trend="profitMargin >= 0 ? 'Profitabel' : 'Rugi'"
-        :trend-up="profitMargin >= 0"
+        :trend="$profitMargin >= 0 ? 'Profitabel' : 'Rugi'"
+        :trend-up="$profitMargin >= 0"
     />
     <x-dashboard.partials.metric-card
         label="Pendapatan"

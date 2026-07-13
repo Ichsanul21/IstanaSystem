@@ -8,7 +8,8 @@
 
     <x-ui.card class="mb-6">
         <form method="GET" action="{{ route('admin.orders.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <x-ui.select name="status" label="Status" placeholder="Semua Status" :options="['pending' => 'Baru', 'processing' => 'Diproses', 'completed' => 'Selesai', 'cancelled' => 'Dibatalkan']" :value="request('status')" />
+            @php $statusOptions = collect(\App\Enums\OrderStatus::cases())->reject(fn($s) => $s === \App\Enums\OrderStatus::Draft)->mapWithKeys(fn($s) => [$s->value => $s->label()])->toArray(); @endphp
+            <x-ui.select name="status" label="Status" placeholder="Semua Status" :options="$statusOptions" :value="request('status')" />
             <x-ui.input type="date" name="date_from" label="Dari Tanggal" :value="request('date_from')" />
             <x-ui.input type="date" name="date_to" label="Sampai Tanggal" :value="request('date_to')" />
             <x-ui.input type="text" name="search" label="Cari" placeholder="Cari order / pelanggan..." :value="request('search')" />
@@ -37,11 +38,8 @@
                     <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">{{ $order->items->pluck('servicePricing.service.name')->implode(', ') ?: '-' }}</td>
                     <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">Rp {{ number_format($order->grand_total ?? $order['total'] ?? 0, 0, ',', '.') }}</td>
                     <td class="px-6 py-4">
-                        @php
-                            $s = $order->status ?? $order['status'] ?? '';
-                            $sm = ['pending' => 'primary', 'processing' => 'warning', 'completed' => 'success', 'cancelled' => 'danger'];
-                        @endphp
-                        <x-ui.badge :variant="$sm[$s] ?? 'gray'">{{ $s }}</x-ui.badge>
+                        @php $s = $order->status ?? $order['status'] ?? ''; $os = \App\Enums\OrderStatus::tryFrom($s); @endphp
+                        <x-ui.badge :variant="$os?->color() ?? 'gray'">{{ $os?->label() ?? $s }}</x-ui.badge>
                     </td>
                     <td class="px-6 py-4">
                         <div class="flex flex-wrap gap-1">

@@ -2,19 +2,19 @@
 <div class="space-y-4">
     @php
     $statuses = [
-        ['code' => 'received', 'label' => 'Terima', 'icon' => '📥'],
-        ['code' => 'washed', 'label' => 'Cuci', 'icon' => '🧺'],
-        ['code' => 'dried', 'label' => 'Kering', 'icon' => '💨'],
-        ['code' => 'ironed', 'label' => 'Setrika', 'icon' => '👔'],
-        ['code' => 'packed', 'label' => 'Packing', 'icon' => '📦'],
-        ['code' => 'ready_for_pickup', 'label' => 'Siap Ambil', 'icon' => '✅'],
-        ['code' => 'picked_up', 'label' => 'Diambil', 'icon' => '🚶'],
+        ['code' => 'TERIMA', 'label' => 'Terima', 'icon' => '📥'],
+        ['code' => 'CUCI', 'label' => 'Cuci', 'icon' => '🧺'],
+        ['code' => 'KERING', 'label' => 'Kering', 'icon' => '💨'],
+        ['code' => 'LIPAT', 'label' => 'Lipat', 'icon' => '👔'],
+        ['code' => 'CEK', 'label' => 'Cek', 'icon' => '🔍'],
+        ['code' => 'SIAP', 'label' => 'Siap Ambil', 'icon' => '✅'],
+        ['code' => 'DIAMBIL', 'label' => 'Diambil', 'icon' => '🚶'],
     ];
     $highestIndex = 0;
     foreach ($items as $item) {
-        $latest = $item->productionStatuses->first();
-        if ($latest) {
-            $idx = array_search($latest->to_status, array_column($statuses, 'code'));
+        $latest = $item->statusLogs->first();
+        if ($latest && $latest->productionStatus) {
+            $idx = array_search($latest->productionStatus->code, array_column($statuses, 'code'));
             if ($idx !== false && $idx > $highestIndex) {
                 $highestIndex = $idx;
             }

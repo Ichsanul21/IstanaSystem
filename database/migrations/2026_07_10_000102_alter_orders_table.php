@@ -49,8 +49,6 @@ return new class extends Migration
             $table->foreign('created_by')->references('id')->on('users');
         });
 
-        DB::statement("UPDATE orders SET status = 'process' WHERE status = 'processing'");
-
         Schema::enableForeignKeyConstraints();
     }
 
@@ -92,8 +90,6 @@ return new class extends Migration
         Schema::table('orders', function (Blueprint $table) {
             $table->foreign('user_id')->references('id')->on('users');
         });
-
-        DB::statement("UPDATE orders SET status = 'processing' WHERE status = 'process'");
 
         Schema::enableForeignKeyConstraints();
     }

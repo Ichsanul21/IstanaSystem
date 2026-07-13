@@ -2,6 +2,7 @@
 
 namespace App\Services\Dashboard;
 
+use App\Enums\OrderStatus;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Payment;
@@ -32,7 +33,7 @@ class DashboardService
             });
         $totalRevenue = (float) $paymentQuery->sum('amount');
 
-        $pendingOrders = (clone $query)->whereNotIn('status', ['completed', 'cancelled'])->count();
+        $pendingOrders = (clone $query)->whereNotIn('status', [OrderStatus::Completed->value, OrderStatus::Cancelled->value])->count();
 
         $totalCustomers = Customer::when($branchId, fn($q) => $q->where('branch_id', $branchId))->count();
 

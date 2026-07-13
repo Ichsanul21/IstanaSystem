@@ -2,6 +2,7 @@
 
 namespace App\Services\Order;
 
+use App\Enums\OrderStatus;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Services\Order\OrderService;
@@ -31,7 +32,7 @@ class PaymentService
             ]);
 
             if ($paymentStatus === 'paid') {
-                $order->update(['status' => 'processing']);
+                $order->update(['status' => OrderStatus::Processing->value]);
             }
 
             return $payment;

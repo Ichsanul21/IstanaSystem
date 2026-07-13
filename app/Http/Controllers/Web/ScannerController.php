@@ -20,7 +20,7 @@ class ScannerController extends Controller
         $orderItem = OrderItem::whereHas('order', function ($q) use ($request) {
             $q->where('qr_token', $request->token)
                 ->orWhere('order_number', $request->token);
-        })->with(['order.customer', 'productionStatuses' => fn($q) => $q->latest()])->first();
+        })->with(['order.customer', 'statusLogs.productionStatus'])->first();
 
         if (!$orderItem) {
             return back()->with('error', 'Item dengan token tersebut tidak ditemukan.');

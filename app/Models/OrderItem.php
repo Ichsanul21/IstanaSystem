@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class OrderItem extends Model
 {
-    use HasFactory;
     protected $fillable = [
         'order_id',
         'service_id',
@@ -30,5 +28,10 @@ class OrderItem extends Model
     public function statusLogs()
     {
         return $this->hasMany(OrderItemStatusLog::class);
+    }
+
+    public function productionStatuses()
+    {
+        return $this->hasMany(OrderItemStatusLog::class)->with('productionStatus');
     }
 }

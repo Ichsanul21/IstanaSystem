@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -21,7 +22,7 @@ class WorkshopController extends Controller
 
     public function index()
     {
-        $grouped = OrderItem::whereHas('order', fn($q) => $q->forCurrentBranch()->whereNotIn('status', ['completed', 'cancelled']))
+        $grouped = OrderItem::whereHas('order', fn($q) => $q->forCurrentBranch()->whereNotIn('status', [OrderStatus::Completed->value, OrderStatus::Cancelled->value]))
             ->with(['order.customer', 'statusLogs' => fn($q) => $q->latest()])
             ->get()
             ->groupBy(function ($item) {
@@ -56,10 +57,10 @@ class WorkshopController extends Controller
 
     public function orderDetail(Order $order)
     {
-        $order->load(['items.statusLogs.scannedBy', 'customer', 'branch']);
+        $order->load(['items.statusLogs.productionStatus', 'customer', 'branch']);
 
         $orderItem = request()->query('item')
-            ? $order->items()->with(['statusLogs.scannedBy'])->find(request()->query('item'))
+            ? $order->items()->with(['statusLogs.productionStatus', 'statusLogs.scannedBy'])->find(request()->query('item'))
             : null;
 
         return view('workshop.order-detail', compact('order', 'orderItem'));
@@ -90,7 +91,7 @@ class WorkshopController extends Controller
 
     public function show(OrderItem $orderItem)
     {
-        $orderItem->load(['statusLogs.scannedBy', 'order.customer']);
+        $orderItem->load(['statusLogs.productionStatus', 'statusLogs.scannedBy', 'order.customer']);
 
         $item = $orderItem;
 

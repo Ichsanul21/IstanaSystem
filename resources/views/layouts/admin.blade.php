@@ -36,7 +36,7 @@
             ['label' => 'Customers / CRM', 'route' => 'admin.customers.index', 'icon' => 'users', 'can' => null],
             ['label' => 'Promotions', 'route' => 'admin.promotions.index', 'icon' => 'tag', 'can' => null],
             ['label' => 'Inventory', 'route' => 'admin.inventory.index', 'icon' => 'cube', 'can' => null],
-            ['label' => 'Finance', 'route' => 'admin.finance.index', 'icon' => 'currency-dollar', 'can' => null],
+            ['label' => 'Finance', 'route' => 'admin.finance.index', 'icon' => 'currency-dollar', 'can' => 'finance-access'],
             ['label' => 'Reports', 'route' => 'admin.reports.revenue', 'icon' => 'chart-bar', 'can' => 'reports-access'],
             ['label' => 'Settings', 'route' => 'admin.settings.index', 'icon' => 'cog', 'can' => null],
             ['label' => 'Users', 'route' => 'admin.users.index', 'icon' => 'user-group', 'can' => 'admin-access'],

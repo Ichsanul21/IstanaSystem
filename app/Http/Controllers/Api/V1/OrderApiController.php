@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -44,7 +45,7 @@ class OrderApiController extends Controller
     public function updateStatus(Order $order, Request $request)
     {
         $request->validate([
-            'status' => 'required|string|in:pending,processing,completed,cancelled',
+            'status' => 'required|string|in:' . implode(',', array_map(fn($c) => $c->value, OrderStatus::cases())),
         ]);
 
         $order->update(['status' => $request->status]);
@@ -120,15 +121,15 @@ class OrderApiController extends Controller
 
     public function trackingStatus($id)
     {
-        $order = \App\Models\Order::with(['items.orderItemStatusLogs', 'customer', 'branch'])->findOrFail($id);
+        $order = \App\Models\Order::with(['items.statusLogs.productionStatus', 'customer', 'branch'])->findOrFail($id);
 
         $items = $order->items->map(function ($item) {
-            $latestLog = $item->orderItemStatusLogs()->latest()->first();
+            $latestLog = $item->statusLogs->first();
             return [
                 'service_code' => $item->service?->code ?? '',
                 'service_name' => $item->service?->name,
                 'quantity' => $item->quantity,
-                'current_status' => $latestLog?->to_status ?? 'received',
+                'current_status' => $latestLog?->productionStatus?->code ?? 'TERIMA',
             ];
         });
 

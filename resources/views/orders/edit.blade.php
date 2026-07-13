@@ -49,7 +49,8 @@
                         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Status & Catatan</h2>
                     </x-slot:header>
                     <div class="space-y-4">
-                        <x-ui.select name="status" label="Status Order" :options="['pending' => 'Baru', 'processing' => 'Diproses', 'completed' => 'Selesai', 'cancelled' => 'Dibatalkan']" :value="old('status', $order->status ?? $order['status'] ?? 'pending')" required />
+                        @php $statuses = \App\Enums\OrderStatus::cases(); @endphp
+                        <x-ui.select name="status" label="Status Order" :options="collect($statuses)->reject(fn($s) => $s === \App\Enums\OrderStatus::Draft)->mapWithKeys(fn($s) => [$s->value => $s->label()])->toArray()" :value="old('status', $order->status ?? $order['status'] ?? 'pending')" required />
                         <x-ui.select name="payment_status" label="Status Pembayaran" :options="['unpaid' => 'Belum Dibayar', 'paid' => 'Lunas']" :value="old('payment_status', $order->payment_status ?? $order['payment_status'] ?? 'unpaid')" required />
                         <x-ui.textarea name="notes" label="Catatan">{{ old('notes', $order->notes ?? $order['notes'] ?? '') }}</x-ui.textarea>
                     </div>

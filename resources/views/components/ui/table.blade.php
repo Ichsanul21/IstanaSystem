@@ -39,18 +39,18 @@
     <style>
         @if ($striped)
         .table-striped tbody tr:nth-child(odd) {
-            background-color: theme('colors.gray.50');
+            background-color: var(--color-gray-50);
         }
         .dark .table-striped tbody tr:nth-child(odd) {
-            background-color: theme('colors.gray.800/50');
+            background-color: color-mix(in srgb, var(--color-gray-800) 50%, transparent);
         }
         @endif
         @if ($hoverable)
         .table-hoverable tbody tr:hover {
-            background-color: theme('colors.gray.50');
+            background-color: var(--color-gray-50);
         }
         .dark .table-hoverable tbody tr:hover {
-            background-color: theme('colors.gray.800');
+            background-color: var(--color-gray-800);
         }
         @endif
     </style>

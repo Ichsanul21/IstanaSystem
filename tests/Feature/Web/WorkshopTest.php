@@ -30,7 +30,8 @@ class WorkshopTest extends TestCase
     public function test_index(): void
     {
         $order = Order::factory()->create(['branch_id' => $this->branch->id]);
-        OrderItem::factory(2)->create(['order_id' => $order->id]);
+        OrderItem::create(['order_id' => $order->id, 'service_id' => 1, 'quantity' => 1, 'price_per_unit' => 10000, 'subtotal' => 10000]);
+        OrderItem::create(['order_id' => $order->id, 'service_id' => 1, 'quantity' => 2, 'price_per_unit' => 15000, 'subtotal' => 30000]);
 
         $this->actingAs($this->user)
             ->get(route('admin.workshop.index'))
@@ -47,7 +48,7 @@ class WorkshopTest extends TestCase
     public function test_show(): void
     {
         $order = Order::factory()->create(['branch_id' => $this->branch->id]);
-        $item = OrderItem::factory()->create(['order_id' => $order->id]);
+        $item = OrderItem::create(['order_id' => $order->id, 'service_id' => 1, 'quantity' => 1, 'price_per_unit' => 10000, 'subtotal' => 10000]);
 
         $this->actingAs($this->user)
             ->get(route('admin.workshop.items.show', $item))
@@ -57,7 +58,7 @@ class WorkshopTest extends TestCase
     public function test_update_status(): void
     {
         $order = Order::factory()->create(['branch_id' => $this->branch->id]);
-        $item = OrderItem::factory()->create(['order_id' => $order->id]);
+        $item = OrderItem::create(['order_id' => $order->id, 'service_id' => 1, 'quantity' => 1, 'price_per_unit' => 10000, 'subtotal' => 10000]);
 
         \App\Models\ProductionStatus::updateOrCreate(
             ['code' => 'TERIMA'],

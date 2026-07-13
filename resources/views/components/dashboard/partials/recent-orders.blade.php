@@ -19,11 +19,8 @@
             <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">{{ $order->customer?->name ?? '-' }}</td>
             <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">Rp {{ number_format($order->grand_total, 0, ',', '.') }}</td>
             <td class="px-6 py-4">
-                @php
-                $statusMap = ['draft' => 'gray', 'pending' => 'warning', 'processing' => 'info', 'completed' => 'success', 'cancelled' => 'danger'];
-                $statusLabel = ['draft' => 'Draft', 'pending' => 'Baru', 'processing' => 'Diproses', 'completed' => 'Selesai', 'cancelled' => 'Dibatalkan'];
-                @endphp
-                <x-ui.badge :variant="$statusMap[$order->status] ?? 'gray'">{{ $statusLabel[$order->status] ?? $order->status }}</x-ui.badge>
+                @php $os = \App\Enums\OrderStatus::tryFrom($order->status); @endphp
+                <x-ui.badge :variant="$os?->color() ?? 'gray'">{{ $os?->label() ?? $order->status }}</x-ui.badge>
             </td>
             <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $order->created_at->format('d/m/Y H:i') }}</td>
         </tr>

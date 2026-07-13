@@ -24,5 +24,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('reports-access', fn ($user) => $user->hasAnyRole(['Developer', 'Super Admin', 'Branch Admin', 'Owner']));
         Gate::define('admin-access', fn ($user) => $user->hasAnyRole(['Developer', 'Super Admin', 'Branch Admin']));
         Gate::define('audit-log-access', fn ($user) => $user->hasAnyRole(['Developer', 'Super Admin', 'Owner']));
+        Gate::define('finance-access', fn ($user) => $user->hasAnyRole(['Developer', 'Super Admin', 'Branch Admin', 'Owner', 'Cashier']));
     }
 }

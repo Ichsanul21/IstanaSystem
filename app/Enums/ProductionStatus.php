@@ -41,6 +41,20 @@ enum ProductionStatus: string
         };
     }
 
+    public function color(): string
+    {
+        return match ($this) {
+            self::Terima => 'gray',
+            self::Pilah => 'info',
+            self::Cuci => 'warning',
+            self::Kering => 'primary',
+            self::Lipat => 'info',
+            self::Cek => 'info',
+            self::Siap => 'success',
+            self::Diambil => 'success',
+        };
+    }
+
     public function next(): ?self
     {
         return match ($this) {

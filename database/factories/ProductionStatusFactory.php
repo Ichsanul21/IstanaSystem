@@ -2,9 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\OrderItem;
 use App\Models\ProductionStatus;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ProductionStatusFactory extends Factory
@@ -14,11 +12,11 @@ class ProductionStatusFactory extends Factory
     public function definition(): array
     {
         return [
-            'order_item_id' => OrderItem::factory(),
-            'from_status' => fake()->randomElement(['received', 'washed', 'dried', 'ironed']),
-            'to_status' => fake()->randomElement(['washed', 'dried', 'ironed', 'packed']),
-            'user_id' => User::factory(),
-            'notes' => fake()->optional()->sentence(),
+            'code' => fake()->unique()->randomElement(['TERIMA', 'PILAH', 'CUCI', 'KERING', 'LIPAT', 'CEK', 'SIAP', 'DIAMBIL']),
+            'name' => fake()->word(),
+            'sequence' => fake()->numberBetween(1, 8),
+            'color' => fake()->hexColor(),
+            'description' => fake()->optional()->sentence(),
         ];
     }
 }

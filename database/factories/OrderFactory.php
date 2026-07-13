@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\OrderStatus;
 use App\Models\Branch;
 use App\Models\Customer;
 use App\Models\Order;
@@ -19,7 +20,7 @@ class OrderFactory extends Factory
             'branch_id' => Branch::factory(),
             'customer_id' => Customer::factory(),
             'created_by' => User::factory(),
-            'status' => 'pending',
+            'status' => OrderStatus::Pending->value,
             'total_amount' => fake()->numberBetween(10000, 100000),
             'discount_amount' => 0,
             'grand_total' => fn(array $attrs) => $attrs['total_amount'],
@@ -31,7 +32,7 @@ class OrderFactory extends Factory
     public function paid(): static
     {
         return $this->state(fn(array $attrs) => [
-            'status' => 'processing',
+            'status' => OrderStatus::Processing->value,
             'payment_status' => 'paid',
         ]);
     }
@@ -39,7 +40,7 @@ class OrderFactory extends Factory
     public function completed(): static
     {
         return $this->state(fn(array $attrs) => [
-            'status' => 'completed',
+            'status' => OrderStatus::Completed->value,
             'payment_status' => 'paid',
             'finished_at' => now(),
         ]);

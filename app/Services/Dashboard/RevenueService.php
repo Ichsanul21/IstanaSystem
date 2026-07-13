@@ -2,6 +2,7 @@
 
 namespace App\Services\Dashboard;
 
+use App\Enums\OrderStatus;
 use App\Models\Branch;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -30,7 +31,7 @@ class RevenueService
                 $q->when($branchId, fn($qq) => $qq->where('branch_id', $branchId))
                     ->when($dateFrom, fn($qq) => $qq->whereDate('created_at', '>=', $dateFrom))
                     ->when($dateTo, fn($qq) => $qq->whereDate('created_at', '<=', $dateTo))
-                    ->whereIn('status', ['completed', 'processing']);
+                    ->whereIn('status', [OrderStatus::Completed->value, OrderStatus::Processing->value]);
             })
             ->groupBy('service_name')
             ->pluck('total', 'service_name')

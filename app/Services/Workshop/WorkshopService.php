@@ -2,6 +2,7 @@
 
 namespace App\Services\Workshop;
 
+use App\Enums\OrderStatus;
 use App\Enums\ProductionStatus;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -53,7 +54,7 @@ class WorkshopService
     {
         $query = OrderItem::query()
             ->whereHas('order', function ($q) use ($branchId) {
-                $q->whereNotIn('status', ['completed', 'cancelled']);
+                $q->whereNotIn('status', [OrderStatus::Completed->value, OrderStatus::Cancelled->value]);
                 if ($branchId) {
                     $q->where('branch_id', $branchId);
                 }

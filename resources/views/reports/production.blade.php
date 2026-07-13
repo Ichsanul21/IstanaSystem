@@ -36,9 +36,9 @@
             @forelse($logs as $log)
             <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                 <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">#{{ $log->orderItem?->id ?? '-' }}</td>
-                <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{{ $log->from_status ?? '-' }}</td>
-                <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{{ $log->to_status ?? '-' }}</td>
-                <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">{{ $log->user?->name ?? '-' }}</td>
+                <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{{ $log->productionStatus?->name ?? '-' }}</td>
+                <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{{ $log->productionStatus?->name ?? '-' }}</td>
+                <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">{{ $log->scannedBy?->name ?? '-' }}</td>
                 <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $log->created_at }}</td>
             </tr>
             @empty

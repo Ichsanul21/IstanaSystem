@@ -7,8 +7,8 @@
     }
     $currentItemStatus = null;
     if ($orderItem) {
-        $latest = $orderItem->productionStatuses->first();
-        $currentItemStatus = $latest ? $latest->to_status : null;
+        $latest = $orderItem->statusLogs->first();
+        $currentItemStatus = $latest?->productionStatus?->code;
     }
     $currentSeq = 0;
     foreach ($statuses as $s) {
@@ -64,15 +64,8 @@
                     <div>
                         <dt class="text-sm text-gray-500 dark:text-gray-400">Status Order</dt>
                         <dd>
-                            @php
-                                $orderBadge = match($order->status) {
-                                    'completed' => 'success',
-                                    'processing' => 'info',
-                                    'cancelled' => 'danger',
-                                    default => 'gray',
-                                };
-                            @endphp
-                            <x-ui.badge :variant="$orderBadge">{{ ucfirst($order->status) }}</x-ui.badge>
+                            @php $os = \App\Enums\OrderStatus::tryFrom($order->status); @endphp
+                            <x-ui.badge :variant="$os?->color() ?? 'gray'">{{ $os?->label() ?? $order->status }}</x-ui.badge>
                         </dd>
                     </div>
                 </dl>
@@ -89,7 +82,7 @@
                         $itemStatus = $currentItemStatus;
                         $allowed = $itemStatus
                             ? \App\Enums\ProductionStatus::allowedTransitionsFrom(\App\Enums\ProductionStatus::tryFrom($itemStatus))
-                            : [\App\Enums\ProductionStatus::Received];
+                            : [\App\Enums\ProductionStatus::Terima];
                     @endphp
 
                     <div class="mb-4">
@@ -173,8 +166,8 @@
                     <div class="space-y-3">
                         @foreach($order->items as $item)
                             @php
-                                $itemLatest = $item->productionStatuses->first();
-                                $itemStatus = $itemLatest ? $itemLatest->to_status : null;
+                                $itemLatest = $item->statusLogs->first();
+                                $itemStatus = $itemLatest?->productionStatus?->code;
                                 $itemSeq = 0;
                                 foreach ($statuses as $s) {
                                     if ($s->value === $itemStatus) {
@@ -195,7 +188,7 @@
                                         @endforeach
                                     </div>
                                 </div>
-                                <x-ui.badge :variant="$itemStatus === 'picked_up' ? 'success' : ($itemStatus ? 'info' : 'gray')">
+                                <x-ui.badge :variant="$itemStatus === 'DIAMBIL' ? 'success' : ($itemStatus ? 'info' : 'gray')">
                                     {{ $itemStatus ? $statusLabels[$itemStatus] ?? $itemStatus : 'Belum' }}
                                 </x-ui.badge>
                             </div>
@@ -213,8 +206,8 @@
                 <div class="space-y-4">
                     @php
                         $timeline = $orderItem
-                            ? $orderItem->productionStatuses->sortByDesc('created_at')
-                            : $order->productionStatuses->sortByDesc('created_at');
+                            ? $orderItem->statusLogs->sortByDesc('created_at')
+                            : $order->items->flatMap->statusLogs->sortByDesc('created_at');
                     @endphp
                     @forelse($timeline as $history)
                         <div class="flex gap-4">
@@ -226,16 +219,17 @@
                             </div>
                             <div class="pb-4">
                                 @php
-                                    $fromLabel = $history->from_status ? ($statusLabels[$history->from_status] ?? $history->from_status) : '-';
-                                    $toLabel = $statusLabels[$history->to_status] ?? $history->to_status;
+                                    $prevIndex = $loop->index + 1 < $timeline->count() ? $timeline->values()[$loop->index + 1] : null;
+                                    $fromLabel = $prevIndex?->productionStatus?->code ? ($statusLabels[$prevIndex->productionStatus->code] ?? $prevIndex->productionStatus->code) : '-';
+                                    $toLabel = $history->productionStatus ? ($statusLabels[$history->productionStatus->code] ?? $history->productionStatus->code) : '-';
                                 @endphp
                                 <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $fromLabel }} &rarr; {{ $toLabel }}</p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">{{ $history->created_at->format('d M Y H:i') }}</p>
                                 @if($history->notes)
                                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $history->notes }}</p>
                                 @endif
-                                @if($history->user)
-                                    <p class="text-xs text-gray-400 mt-1">oleh {{ $history->user->name }}</p>
+                                @if($history->scannedBy)
+                                    <p class="text-xs text-gray-400 mt-1">oleh {{ $history->scannedBy->name }}</p>
                                 @endif
                             </div>
                         </div>

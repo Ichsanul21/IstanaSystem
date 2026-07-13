@@ -100,8 +100,8 @@
                                 <td class="px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ $order->order_number }}</td>
                                 <td class="px-6 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ $order->created_at->format('d/m/Y') }}</td>
                                 <td class="px-6 py-3 whitespace-nowrap">
-                                    @php $statusColors = ['draft'=>'gray','pending'=>'primary','processing'=>'warning','completed'=>'success','cancelled'=>'danger']; @endphp
-                                    <x-ui.badge :variant="$statusColors[$order->status] ?? 'gray'">{{ ucfirst($order->status) }}</x-ui.badge>
+                                    @php $os = \App\Enums\OrderStatus::tryFrom($order->status); @endphp
+                                    <x-ui.badge :variant="$os?->color() ?? 'gray'">{{ $os?->label() ?? $order->status }}</x-ui.badge>
                                 </td>
                                 <td class="px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
                                 <td class="px-6 py-3 whitespace-nowrap text-sm">
