@@ -3,10 +3,12 @@
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Pelanggan</h1>
             <div class="flex items-center gap-3">
+                @can('customer.create')
                 <x-ui.button href="{{ route('admin.customers.create') }}" variant="primary">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                     Tambah Pelanggan
                 </x-ui.button>
+                @endcan
             </div>
         </div>
     </x-slot:header>
@@ -60,7 +62,9 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                             <div class="flex items-center gap-2">
                                 <x-ui.button href="{{ route('admin.customers.show', $customer) }}" variant="ghost" size="sm">Detail</x-ui.button>
+                                @can('customer.update')
                                 <x-ui.button href="{{ route('admin.customers.edit', $customer) }}" variant="ghost" size="sm">Edit</x-ui.button>
+                                @endcan
                             </div>
                         </td>
                     </tr>

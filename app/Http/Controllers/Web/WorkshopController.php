@@ -22,7 +22,7 @@ class WorkshopController extends Controller
 
     public function index()
     {
-        $grouped = OrderItem::whereHas('order', fn($q) => $q->forCurrentBranch()->whereNotIn('status', [OrderStatus::Completed->value, OrderStatus::Cancelled->value]))
+        $grouped = OrderItem::whereHas('order', fn($q) => $q->forCurrentBranch()->whereNotIn('status', [OrderStatus::ReadyForPickup->value, OrderStatus::PickedUp->value, OrderStatus::Cancelled->value]))
             ->with(['order.customer', 'statusLogs' => fn($q) => $q->latest()])
             ->get()
             ->groupBy(function ($item) {

@@ -1,7 +1,14 @@
 import Alpine from 'alpinejs';
+import Chart from 'chart.js/auto';
 import { themeStore } from './stores/theme';
 import { sidebarStore } from './stores/sidebar';
 import posCart from './pos-cart';
+
+window.Chart = Chart;
+
+Chart.defaults.font.family = 'Inter, sans-serif';
+Chart.defaults.color = '#666666';
+Chart.defaults.borderColor = '#E5E5E5';
 
 window.Alpine = Alpine;
 

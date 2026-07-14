@@ -54,7 +54,7 @@ class WorkshopService
     {
         $query = OrderItem::query()
             ->whereHas('order', function ($q) use ($branchId) {
-                $q->whereNotIn('status', [OrderStatus::Completed->value, OrderStatus::Cancelled->value]);
+                $q->whereNotIn('status', [OrderStatus::ReadyForPickup->value, OrderStatus::PickedUp->value, OrderStatus::Cancelled->value]);
                 if ($branchId) {
                     $q->where('branch_id', $branchId);
                 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Service;
 use App\Models\ServicePricing;
@@ -11,30 +12,28 @@ class ServiceApiController extends Controller
 {
     public function index()
     {
-        $services = Service::where('is_active', true)->get();
-
-        return response()->json(['data' => $services->map(fn($s) => [
+        return ApiResponse::success(Service::where('is_active', true)->get()->map(fn($s) => [
             'id' => $s->id,
             'code' => $s->code,
             'name' => $s->name,
             'unit' => $s->unit ?? 'kg',
             'description' => $s->description ?? '',
             'is_active' => (bool) $s->is_active,
-        ])]);
+        ]));
     }
 
     public function show($id)
     {
         $service = Service::findOrFail($id);
 
-        return response()->json(['data' => [
+        return ApiResponse::success([
             'id' => $service->id,
             'code' => $service->code,
             'name' => $service->name,
             'unit' => $service->unit ?? 'kg',
             'description' => $service->description ?? '',
             'is_active' => (bool) $service->is_active,
-        ]]);
+        ]);
     }
 
     public function store(Request $request)
@@ -49,7 +48,7 @@ class ServiceApiController extends Controller
 
         $service = Service::create($data);
 
-        return response()->json(['success' => true, 'data' => ['id' => $service->id]], 201);
+        return ApiResponse::success(['id' => $service->id], null, 201);
     }
 
     public function pricings(Request $request)
@@ -60,7 +59,7 @@ class ServiceApiController extends Controller
             $query->where('branch_id', $request->branch_id);
         }
 
-        return response()->json(['data' => $query->get()->map(fn($p) => [
+        return ApiResponse::success($query->get()->map(fn($p) => [
             'id' => $p->id,
             'service_id' => $p->service_id,
             'service' => $p->service ? ['code' => $p->service->code, 'name' => $p->service->name] : null,
@@ -68,7 +67,7 @@ class ServiceApiController extends Controller
             'price' => (float) $p->price,
             'min_weight' => (float) ($p->min_weight ?? 0),
             'is_active' => (bool) $p->is_active,
-        ])]);
+        ]));
     }
 
     public function updatePricing(Request $request, $id)
@@ -82,7 +81,7 @@ class ServiceApiController extends Controller
 
         $pricing->update($data);
 
-        return response()->json(['success' => true, 'message' => 'Pricing updated']);
+        return ApiResponse::success(null, 'Pricing updated');
     }
 
     public function bulkUpdatePricing(Request $request)
@@ -101,6 +100,6 @@ class ServiceApiController extends Controller
             );
         }
 
-        return response()->json(['success' => true, 'message' => 'Pricings updated']);
+        return ApiResponse::success(null, 'Pricings updated');
     }
 }

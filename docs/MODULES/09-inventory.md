@@ -87,6 +87,32 @@ INVENTORY → Stock Detail (per item)
 | Transfer Out | Inventory In Transit | Inventory Asset |
 | Transfer In | Inventory Asset | Inventory In Transit |
 
+## Routes
+
+All routes use the `admin.*` name prefix, nested under `auth` → `verified` → `branch` middleware.
+
+**Inventory Items (CRUD):**
+| Action | Name | Permission |
+|--------|------|-----------|
+| List | `admin.inventory.index` | `inventory.read\|inventory.create\|inventory.update\|inventory.delete` |
+| Create | `admin.inventory.create` | (same) |
+| Store | `admin.inventory.store` | (same) |
+| Show | `admin.inventory.show` | (same) |
+| Edit | `admin.inventory.edit` | (same) |
+| Update | `admin.inventory.update` | (same) |
+| Delete | `admin.inventory.destroy` | (same) |
+| Add stock (legacy) | `admin.inventory.add-stock` | `stock_in` |
+| Transfer (legacy) | `admin.inventory.transfer` | `stock_out` |
+
+**Stock Operations (dedicated controller):**
+| Action | Name | Permission |
+|--------|------|-----------|
+| Stock overview | `admin.inventory.stock.index` | `inventory.read` |
+| Stock in form | `admin.inventory.stock.create` | `stock_in` |
+| Stock in store | `admin.inventory.stock.store` | `stock_in` |
+| Stock out form | `admin.inventory.stock.out` | `stock_out` |
+| Stock out deduct | `admin.inventory.stock.deduct` | `stock_out` |
+
 ## Files
 
 ```
@@ -104,6 +130,7 @@ database/migrations/create_inventory_transactions_table.php
 resources/views/inventory/items/index.blade.php
 resources/views/inventory/items/create.blade.php
 resources/views/inventory/items/edit.blade.php
+resources/views/inventory/items/show.blade.php
 resources/views/inventory/stock/index.blade.php
 resources/views/inventory/stock/create.blade.php
 resources/views/inventory/stock/out.blade.php

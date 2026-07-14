@@ -92,11 +92,11 @@ class OrderController extends Controller
         return redirect()->route('admin.orders.show', $order)->with('success', 'Pesanan berhasil diperbarui.');
     }
 
-    public function print(Order $order)
+    public function receipt(Order $order)
     {
         $order->load(['items', 'payments', 'customer']);
 
-        return view('orders.print', compact('order'));
+        return view('orders.receipt', compact('order'));
     }
 
     public function destroy(Order $order)

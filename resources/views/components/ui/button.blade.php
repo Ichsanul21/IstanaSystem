@@ -12,12 +12,12 @@
 $baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
 
 $variants = [
-    'primary' => 'bg-primary text-white hover:bg-primary-dark focus:ring-primary shadow-sm',
-    'secondary' => 'bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-400 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600',
-    'danger' => 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm',
-    'outline' => 'border-2 border-primary text-primary hover:bg-primary hover:text-white focus:ring-primary',
-    'ghost' => 'text-gray-600 hover:bg-gray-100 focus:ring-gray-400 dark:text-gray-400 dark:hover:bg-gray-700',
-    'icon' => 'text-gray-600 hover:bg-gray-100 focus:ring-gray-400 dark:text-gray-400 dark:hover:bg-gray-700',
+    'primary' => 'bg-lo text-white hover:bg-lo-600 focus:ring-lo shadow-sm cta-main',
+    'dark' => 'bg-dark text-white hover:bg-dark-800 focus:ring-dark shadow-sm',
+    'danger' => 'bg-error text-white hover:bg-red-700 focus:ring-error shadow-sm',
+    'outline' => 'border border-lo-gray text-black dark:text-white hover:border-black dark:hover:border-white focus:ring-lo',
+    'ghost' => 'text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white focus:ring-lo',
+    'icon' => 'text-black/50 dark:text-white/50 hover:bg-gray-100 dark:hover:bg-dark-800 focus:ring-lo',
 ];
 
 $sizes = [

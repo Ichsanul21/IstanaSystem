@@ -3,7 +3,7 @@
 @php
     $percent = $max > 0 ? min(100, ($value / $max) * 100) : 0;
     $sizes = ['sm' => 'h-1.5', 'md' => 'h-2.5', 'lg' => 'h-4'];
-    $colors = ['primary' => 'bg-primary', 'green' => 'bg-green-500', 'blue' => 'bg-blue-500', 'red' => 'bg-red-500'];
+    $colors = ['primary' => 'bg-primary', 'lo' => 'bg-lo', 'green' => 'bg-green-500', 'blue' => 'bg-blue-500', 'red' => 'bg-red-500'];
     $barColor = $colors[$color] ?? $colors['primary'];
     $barSize = $sizes[$size] ?? $sizes['md'];
 @endphp

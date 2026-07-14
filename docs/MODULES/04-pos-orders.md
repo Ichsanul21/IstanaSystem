@@ -149,13 +149,59 @@ POS → New Order
 
 ## Routes
 
+All routes use the `admin.*` name prefix, nested under `auth` → `verified` → `branch` middleware.
+
 ```php
-Route::resource('orders', OrderController::class);
-Route::resource('orders.payments', PaymentController::class);
-Route::resource('orders.refunds', RefundController::class);
-Route::get('pos', [POSController::class, 'index'])->name('pos.index');
-Route::get('orders/{order}/receipt', [OrderController::class, 'receipt']);
+Route::middleware(['auth', 'verified'])->name('admin.')->group(function () {
+    Route::middleware(['branch'])->group(function () {
+        // POS
+        Route::get('/pos', [POSController::class, 'index'])
+            ->middleware('permission:order.create')->name('pos.index');
+
+        // Orders (resource CRUD)
+        Route::resource('orders', OrderController::class)
+            ->middleware('permission:order.read|order.create|order.update|order.delete');
+        Route::get('/orders/{order}/receipt', [OrderController::class, 'receipt'])
+            ->middleware('permission:order.read')->name('orders.receipt');
+
+        // Payments (nested under orders)
+        Route::get('/orders/{order}/payments/create', [PaymentController::class, 'create'])
+            ->middleware('permission:payment.create')->name('orders.payments.create');
+        Route::post('/orders/{order}/payments', [PaymentController::class, 'store'])
+            ->middleware('permission:payment.create')->name('orders.payments.store');
+        Route::get('/payments/{payment}', [PaymentController::class, 'show'])
+            ->middleware('permission:payment.read')->name('orders.payments.show');
+
+        // Refunds
+        Route::get('/refunds', [RefundController::class, 'index'])
+            ->middleware('permission:process_refund|approve_refund')->name('refunds.index');
+        Route::post('/orders/{order}/refunds', [RefundController::class, 'store'])
+            ->middleware('permission:process_refund')->name('refunds.store');
+        Route::post('/refunds/{refund}/approve', [RefundController::class, 'approve'])
+            ->middleware('permission:approve_refund')->name('refunds.approve');
+        Route::post('/refunds/{refund}/complete', [RefundController::class, 'complete'])
+            ->middleware('permission:process_refund')->name('refunds.complete');
+        Route::post('/refunds/{refund}/reject', [RefundController::class, 'reject'])
+            ->middleware('permission:approve_refund')->name('refunds.reject');
+    });
+});
 ```
+
+**Route names reference:**
+| Action | Name | Permission |
+|--------|------|-----------|
+| POS index | `admin.pos.index` | `order.create` |
+| Orders list | `admin.orders.index` | `order.read\|order.create\|order.update\|order.delete` |
+| Order show | `admin.orders.show` | (same) |
+| Order receipt | `admin.orders.receipt` | `order.read` |
+| Payment create form | `admin.orders.payments.create` | `payment.create` |
+| Payment store | `admin.orders.payments.store` | `payment.create` |
+| Payment show | `admin.orders.payments.show` | `payment.read` |
+| Refunds list | `admin.refunds.index` | `process_refund\|approve_refund` |
+| Refund store | `admin.refunds.store` | `process_refund` |
+| Refund approve | `admin.refunds.approve` | `approve_refund` |
+| Refund complete | `admin.refunds.complete` | `process_refund` |
+| Refund reject | `admin.refunds.reject` | `approve_refund` |
 
 ## Files
 

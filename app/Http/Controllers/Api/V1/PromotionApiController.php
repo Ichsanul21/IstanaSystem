@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Promotion;
+use App\Models\Order;
 use App\Services\Promotion\PromotionService;
 use App\Services\DiscountService;
 use Illuminate\Http\Request;
@@ -31,12 +33,12 @@ class PromotionApiController extends Controller
             $query->where('type', $request->type);
         }
 
-        return response()->json(['data' => $query->get()]);
+        return ApiResponse::success($query->get());
     }
 
     public function show($id)
     {
-        return response()->json(['data' => Promotion::with('branches')->findOrFail($id)]);
+        return ApiResponse::success(Promotion::with('branches')->findOrFail($id));
     }
 
     public function store(Request $request)
@@ -61,7 +63,7 @@ class PromotionApiController extends Controller
             $promotion->branches()->sync($data['branch_ids']);
         }
 
-        return response()->json(['success' => true, 'data' => $promotion], 201);
+        return ApiResponse::success($promotion, null, 201);
     }
 
     public function update(Request $request, $id)
@@ -88,21 +90,23 @@ class PromotionApiController extends Controller
             $promotion->branches()->sync($data['branch_ids']);
         }
 
-        return response()->json(['success' => true, 'message' => 'Promotion updated']);
+        return ApiResponse::success(null, 'Promotion updated');
     }
 
     public function eligible($orderId)
     {
+        $order = Order::findOrFail($orderId);
         $promotions = $this->promotionService->getEligiblePromotions(currentBranchId());
 
-        return response()->json(['data' => $promotions->map(fn($p) => [
+        return ApiResponse::success($promotions->map(fn($p) => [
             'id' => $p->id,
             'code' => $p->code,
             'name' => $p->name,
             'type' => $p->type,
             'value' => (float) $p->value,
             'max_discount' => (float) ($p->max_discount ?? 0),
-        ])]);
+            'estimated_discount' => $this->discountService->calculatePromotionDiscount($p, (float) $order->total_amount),
+        ]));
     }
 
     public function calculate(Request $request, $id)
@@ -114,7 +118,7 @@ class PromotionApiController extends Controller
             'redeem_points' => 'nullable|integer|min:0',
         ]);
 
-        $order = \App\Models\Order::findOrFail($request->order_id);
+        $order = Order::findOrFail($request->order_id);
         $subtotal = (float) $order->total_amount;
         $discount = $this->discountService->calculatePromotionDiscount($promotion, $subtotal);
 
@@ -125,11 +129,11 @@ class PromotionApiController extends Controller
 
         $grandTotal = max(0, $subtotal - $discount - $pointDiscount);
 
-        return response()->json(['data' => [
+        return ApiResponse::success([
             'subtotal' => $subtotal,
             'promotion_discount' => $discount,
             'point_discount' => $pointDiscount,
             'grand_total' => $grandTotal,
-        ]]);
+        ]);
     }
 }

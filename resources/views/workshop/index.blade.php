@@ -2,9 +2,11 @@
     <x-slot:header>
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Workshop / Produksi</h1>
+            @can('workshop.scan')
             <x-ui.button href="{{ route('admin.workshop.scan') }}" variant="primary" size="sm">
                 Scan QR
             </x-ui.button>
+            @endcan
         </div>
     </x-slot:header>
 
@@ -35,6 +37,7 @@
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">#{{ $item->order_number ?? $item['order_number'] ?? '-' }}</p>
                             <p class="text-xs text-gray-400 mt-1">{{ $item->time_elapsed ?? $item['time_elapsed'] ?? '' }}</p>
                             @if($key !== 'picked_up')
+                                @canany(['workshop.update_status', 'quality_check'])
                                 <form method="POST" action="{{ route('admin.workshop.update-status', $item->id ?? $item['id']) }}" class="mt-2" x-on:click.stop>
                                     @csrf
                                     @php
@@ -44,6 +47,7 @@
                                     <input type="hidden" name="status" value="{{ $nextStatus }}">
                                     <x-ui.button type="submit" size="sm" variant="primary" class="w-full text-xs">Lanjutkan</x-ui.button>
                                 </form>
+                                @endcanany
                             @endif
                         </div>
                     @empty

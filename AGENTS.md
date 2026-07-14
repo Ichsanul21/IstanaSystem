@@ -5,9 +5,9 @@
 - **CSS**: Tailwind CSS v4 (`@tailwindcss/vite` plugin, no `tailwind.config.js`, no `postcss` Tailwind plugin)
 - **JS**: Alpine.js 3 (stores in `resources/js/stores/` — theme.js for dark mode, sidebar.js for collapse)
 - **Auth**: Laravel Breeze (Blade) v2.4.2
-- **Roles**: Spatie Permission v8.3.0 (8 roles, 37 permissions) — seeded by `RolePermissionSeeder`
+- **Roles**: Spatie Permission v8.3.0 (8 roles, 67+ permissions) — seeded by `RolePermissionSeeder`
 - **Payments**: Midtrans v2.6.0 (via `PaymentWebhookController`)
-- **PDF**: DomPDF dev-master (config NOT published — `config/dompdf.php` missing)
+- **PDF**: DomPDF dev-master
 - **Excel**: Laravel Excel 3.1.69
 - **Backup**: Spatie Backup 10.3.0
 - **Charts**: Chart.js (loaded via CDN in views, not bundled)
@@ -30,12 +30,13 @@ php artisan optimize:clear
 ### Route groups (from `routes/web.php`)
 - `GET /track/{token}`, `POST /track/{token}/verify` — public tracking (no auth)
 - **`admin.*`** — all authenticated routes under `Route::middleware(['auth', 'verified'])->name('admin.')`
-  - Inside: `branch` middleware group (`SetBranchContext`) — required for most features
+  - **No-branch group**: settings, gateway, audit, activity-logs, backup (system-wide, no `SetBranchContext`)
+  - **Branch group**: `SetBranchContext` middleware — required for most features
   - Resourceful: `branches`, `users`, `customers`, `orders`, `promotions`, `inventory`
-  - Nested: `orders/{order}/payments`, `orders/{order}/refunds`
+  - Nested: `orders/{order}/payments`
   - Prefix groups: `finance.*` (6 routes), `reports.*` (6 routes)
 - `api/v1/*` — public tracking, auth:sanctum for orders/customers CRUD
-- `api/webhook/midtrans` — POST only, CSRF excluded, no `webhook.signature` middleware applied (registered but unused)
+- `api/webhook/midtrans/notification` — POST only, CSRF excluded, `webhook.signature` middleware applied
 
 ### API routes (`routes/api.php`)
 - `GET /api/v1/track/{token}`, `POST /api/v1/track/{token}/verify` — public
@@ -44,8 +45,8 @@ php artisan optimize:clear
 
 ### Middleware (registered in `bootstrap/app.php`)
 - `branch` — `SetBranchContext` (stores `current_branch_id` in session)
-- `role` — `CheckRole` (comma-separated roles, e.g. `role:Developer,Super Admin`)
-- `webhook.signature` — `VerifyWebhookSignature` (registered but unused in routes)
+- `role` — `Spatie\Permission\Middleware\RoleMiddleware` (comma-separated roles, e.g. `role:Developer,Super Admin`)
+- `webhook.signature` — `VerifyWebhookSignature` (applied via `web` middleware group on webhook routes)
 
 ### Branch scoping
 - `SetBranchContext` middleware → session `current_branch_id` → `currentBranchId()` helper
@@ -63,7 +64,7 @@ php artisan optimize:clear
 - **Seeders** are idempotent (`firstOrCreate` / `updateOrCreate`)
 
 ### Key enum values (for view validation alignment)
-- `ProductionStatus`: `received`, `washed`, `dried`, `ironed`, `packed`, `ready_for_pickup`, `picked_up`, `cancelled`
+- `ProductionStatus`: `TERIMA`, `PILAH`, `CUCI`, `KERING`, `LIPAT`, `CEK`, `SIAP`, `DIAMBIL`
 - `OrderStatus`: `draft`, `pending`, `processing`, `completed`, `cancelled`
 - Views use Indonesian labels/values — enum values above are what `updateStatus()` validates against
 

@@ -32,7 +32,7 @@ class OrderFactory extends Factory
     public function paid(): static
     {
         return $this->state(fn(array $attrs) => [
-            'status' => OrderStatus::Processing->value,
+            'status' => OrderStatus::Received->value,
             'payment_status' => 'paid',
         ]);
     }
@@ -40,7 +40,7 @@ class OrderFactory extends Factory
     public function completed(): static
     {
         return $this->state(fn(array $attrs) => [
-            'status' => OrderStatus::Completed->value,
+            'status' => OrderStatus::PickedUp->value,
             'payment_status' => 'paid',
             'finished_at' => now(),
         ]);

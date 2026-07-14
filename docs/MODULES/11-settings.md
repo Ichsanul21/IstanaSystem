@@ -114,6 +114,7 @@ app/Services/SettingService.php
 app/Helpers/settings.php
 app/Http/Controllers/Web/SettingsController.php
 app/Http/Controllers/Web/BranchSettingController.php
+app/Http/Controllers/Web/GatewayConfigurationController.php
 database/migrations/create_settings_table.php
 database/migrations/create_branch_settings_table.php
 database/seeders/DefaultSettingsSeeder.php
@@ -132,3 +133,26 @@ resources/views/settings/partials/group-layout.blade.php
 resources/views/settings/activity-logs.blade.php
 resources/views/settings/backup.blade.php
 ```
+
+## Routes
+
+All routes use the `admin.*` name prefix, nested under `auth` → `verified` → `branch` middleware.
+
+**Settings:**
+| Action | Name | Permission |
+|--------|------|-----------|
+| Settings index (menu grid) | `admin.settings.index` | `settings.read\|settings.update\|edit_global_settings` |
+| Settings group page | `admin.settings.group` | `settings.read` |
+| Settings group update | `admin.settings.group.update` | `settings.update` |
+
+**Branch Settings:**
+| Action | Name | Permission |
+|--------|------|-----------|
+| Branch settings page | `admin.branch-settings.index` | `edit_branch_settings` |
+| Branch settings update | `admin.branch-settings.update` | `edit_branch_settings` |
+
+**Gateway Configuration:**
+| Action | Name | Permission |
+|--------|------|-----------|
+| Gateway config page | `admin.settings.gateway` | `manage_gateway_config` |
+| Gateway config update | `admin.settings.gateway.update` | `manage_gateway_config` |

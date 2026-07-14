@@ -21,10 +21,10 @@ class PaymentController extends Controller
     {
         $payment = $this->orderService->processPayment($order, $request->validated());
 
-        return redirect()->route('admin.payments.show', $payment)->with('success', 'Pembayaran berhasil dicatat.');
+        return redirect()->route('admin.orders.payments.show', ['order' => $order, 'payment' => $payment])->with('success', 'Pembayaran berhasil dicatat.');
     }
 
-    public function show(Payment $payment)
+    public function show(Order $order, Payment $payment)
     {
         $payment->load('order');
 

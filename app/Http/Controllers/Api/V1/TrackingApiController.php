@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -10,19 +11,15 @@ class TrackingApiController extends Controller
 {
     public function status($token)
     {
-        $order = Order::with('customer')
+        $order = Order::with(['customer', 'branch', 'items.servicePricing.service', 'items.statusLogs.productionStatus'])
             ->where('qr_token', $token)
-            ->with(['items.servicePricing.service', 'items.statusLogs.productionStatus'])
             ->first();
 
         if (!$order) {
-            return response()->json(['success' => false, 'message' => 'Order not found.'], 404);
+            return ApiResponse::error('Order not found.', null, 404);
         }
 
-        return response()->json([
-            'success' => true,
-            'order' => $this->formatOrder($order),
-        ]);
+        return ApiResponse::success($this->formatOrder($order));
     }
 
     public function verify(Request $request, $token)
@@ -32,37 +29,49 @@ class TrackingApiController extends Controller
         $order = Order::with('customer')->where('qr_token', $token)->first();
 
         if (!$order) {
-            return response()->json(['success' => false, 'message' => 'Order not found.'], 404);
+            return ApiResponse::error('Order not found.', null, 404);
         }
 
         if ($request->pin !== $order->customer->pin) {
-            return response()->json(['success' => false, 'message' => 'Invalid PIN.'], 403);
+            return ApiResponse::error('Invalid PIN.', null, 422);
         }
 
-        $order->load(['items.servicePricing.service', 'items.statusLogs.productionStatus']);
-
-        return response()->json([
-            'success' => true,
-            'order' => $this->formatOrder($order),
-        ]);
+        return ApiResponse::success(['verified' => true]);
     }
 
     private function formatOrder(Order $order): array
     {
-        $statusHistory = $order->items->flatMap->statusLogs->sortBy('created_at')->map(fn($ps) => [
-            'status' => $ps->productionStatus?->name ?? '-',
-            'created_at' => $ps->created_at->format('d/m/Y H:i'),
-            'note' => $ps->note ?? null,
-        ])->toArray();
+        $statuses = ['received', 'washed', 'dried', 'ironed', 'packed', 'ready_for_pickup', 'picked_up'];
+        $allStatusLogs = $order->items->flatMap->statusLogs->sortBy('created_at');
+
+        $timeline = collect($statuses)->map(fn($code) => [
+            'status' => $code,
+            'completed' => $allStatusLogs->contains(fn($log) => $log->productionStatus?->code === $code),
+            'completed_at' => $allStatusLogs->where(fn($log) => $log->productionStatus?->code === $code)->first()?->created_at?->format('d/m/Y H:i'),
+        ]);
+
+        $currentStep = $timeline->search(fn($s) => !$s['completed']);
+        $currentStep = $currentStep === false ? count($statuses) : $currentStep;
+
+        $items = $order->items->map(fn($item) => [
+            'service_name' => $item->servicePricing?->service?->name ?? '-',
+            'quantity' => (float) $item->quantity,
+            'price' => (float) $item->price_per_unit,
+        ]);
 
         return [
             'id' => $order->id,
             'order_number' => $order->order_number,
-            'customer_name' => $order->customer->name ?? '-',
+            'customer_name' => $order->customer?->name ?? '-',
             'qr_token' => $order->qr_token,
             'created_at' => $order->created_at->format('d/m/Y H:i'),
             'status' => $order->status,
-            'status_history' => $statusHistory,
+            'branch' => $order->branch?->name,
+            'timeline' => $timeline,
+            'items' => $items,
+            'current_step' => $currentStep,
+            'total_steps' => count($statuses),
+            'estimated_finish' => $order->estimated_finish?->format('d/m/Y H:i'),
         ];
     }
 }

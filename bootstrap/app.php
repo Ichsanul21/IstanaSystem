@@ -13,18 +13,21 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
         then: function () {
             Route::middleware('web')->group(__DIR__.'/../routes/auth.php');
-            Route::middleware('api')->prefix('api/webhook')->name('webhook.')->group(__DIR__.'/../routes/webhook.php');
+            Route::middleware(['web', 'webhook.signature'])->prefix('api')->name('webhook.')->group(__DIR__.'/../routes/webhook.php');
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
+            'auth.sync' => \App\Http\Middleware\SyncAuthGuard::class,
             'branch' => \App\Http\Middleware\SetBranchContext::class,
-            'role' => \App\Http\Middleware\CheckRole::class,
+            'branch.header' => \App\Http\Middleware\SetBranchFromHeader::class,
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'webhook.signature' => \App\Http\Middleware\VerifyWebhookSignature::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [
-            'api/webhook/*',
+            'api/v1/payments/midtrans/*',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

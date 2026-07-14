@@ -105,12 +105,13 @@ class OrderControllerTest extends TestCase
         ]);
 
         $this->actingAs($this->user)
+            ->from(route('admin.orders.edit', $order))
             ->put(route('admin.orders.update', $order), [
-                'status' => 'processing',
+                'status' => 'received',
             ])
             ->assertRedirect(route('admin.orders.show', $order));
 
-        $this->assertEquals('processing', $order->fresh()->status);
+        $this->assertEquals('received', $order->fresh()->status);
     }
 
     public function test_print(): void
@@ -118,7 +119,7 @@ class OrderControllerTest extends TestCase
         $order = Order::factory()->create(['branch_id' => $this->branch->id]);
 
         $this->actingAs($this->user)
-            ->get(route('admin.orders.print', $order))
+            ->get(route('admin.orders.receipt', $order))
             ->assertOk();
     }
 

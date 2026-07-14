@@ -37,7 +37,7 @@ $maxWidthClasses = match ($maxWidth) {
          x-transition:leave="ease-in duration-200"
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
-         class="fixed inset-0 bg-gray-900/50 dark:bg-gray-900/80"
+         class="fixed inset-0 bg-dark/50 dark:bg-dark/80"
          x-on:click="show = false">
     </div>
 
@@ -49,11 +49,11 @@ $maxWidthClasses = match ($maxWidth) {
              x-transition:leave="ease-in duration-200"
              x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
              x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-             class="relative w-full {{ $maxWidthClasses }} rounded-xl bg-white dark:bg-gray-800 shadow-2xl">
+             class="relative w-full {{ $maxWidthClasses }} rounded-xl bg-white dark:bg-dark-900 shadow-theme-xl">
             @isset($title)
-                <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ $title }}</h3>
-                    <button x-on:click="show = false" class="rounded-lg p-1 text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <div class="flex items-center justify-between border-b border-lo-gray dark:border-dark-700 px-6 py-4">
+                    <h3 class="text-lg font-bold text-dark dark:text-white">{{ $title }}</h3>
+                    <button x-on:click="show = false" class="rounded-lg p-1 text-black/40 hover:text-black hover:bg-gray-100 dark:hover:bg-dark-800 transition-colors">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
                         </svg>
@@ -61,7 +61,7 @@ $maxWidthClasses = match ($maxWidth) {
                 </div>
             @else
                 <div class="absolute right-4 top-4">
-                    <button x-on:click="show = false" class="rounded-lg p-1 text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <button x-on:click="show = false" class="rounded-lg p-1 text-black/40 hover:text-black hover:bg-gray-100 dark:hover:bg-dark-800 transition-colors">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
                         </svg>
@@ -80,7 +80,7 @@ $maxWidthClasses = match ($maxWidth) {
             @endisset
 
             @isset($footer)
-                <div class="flex items-center justify-end gap-3 border-t border-gray-200 dark:border-gray-700 px-6 py-4">
+                <div class="flex items-center justify-end gap-3 border-t border-lo-gray dark:border-dark-700 px-6 py-4">
                     {{ $footer }}
                 </div>
             @endisset

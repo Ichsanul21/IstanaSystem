@@ -32,7 +32,7 @@ class CustomerApiTest extends TestCase
         $this->actingAs($this->user)
             ->getJson('/api/v1/customers')
             ->assertOk()
-            ->assertJsonStructure(['data', 'links', 'total', 'current_page']);
+            ->assertJsonStructure(['success', 'data', 'meta' => ['current_page', 'last_page', 'per_page', 'total']]);
     }
 
     public function test_show_returns_customer(): void
@@ -42,7 +42,7 @@ class CustomerApiTest extends TestCase
         $this->actingAs($this->user)
             ->getJson("/api/v1/customers/{$customer->id}")
             ->assertOk()
-            ->assertJsonPath('id', $customer->id);
+            ->assertJsonPath('data.id', $customer->id);
     }
 
     public function test_store_creates_customer(): void
@@ -56,7 +56,7 @@ class CustomerApiTest extends TestCase
             ]);
 
         $response->assertCreated()
-            ->assertJsonPath('name', 'John Doe');
+            ->assertJsonPath('data.name', 'John Doe');
     }
 
     public function test_store_validates_required_fields(): void
@@ -98,7 +98,7 @@ class CustomerApiTest extends TestCase
         $this->actingAs($this->user)
             ->getJson('/api/customers/search?q=Ahmad')
             ->assertOk()
-            ->assertJsonCount(1);
+            ->assertJsonCount(1, 'data');
     }
 
     public function test_search_by_phone(): void
@@ -111,7 +111,7 @@ class CustomerApiTest extends TestCase
         $this->actingAs($this->user)
             ->getJson('/api/customers/search?q=08111111111')
             ->assertOk()
-            ->assertJsonCount(1);
+            ->assertJsonCount(1, 'data');
     }
 
     public function test_unauthenticated_access_is_blocked(): void

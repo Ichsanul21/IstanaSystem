@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\GatewayPayment;
@@ -22,7 +23,6 @@ class PaymentApiController extends Controller
 
         $order = Order::with('items.service')->findOrFail($request->order_id);
 
-        // Generate Snap token
         $transactionDetails = [
             'order_id' => $order->order_number,
             'gross_amount' => (int) $order->grand_total,
@@ -40,12 +40,10 @@ class PaymentApiController extends Controller
             'name' => $item->service?->name,
         ])->toArray();
 
-        // Use Midtrans if configured, otherwise return a mock token
         $snapToken = 'snap-mock-' . uniqid();
         $redirectUrl = 'https://app.midtrans.com/snap/v2/vtweb/' . $snapToken;
 
         try {
-            // Attempt real Midtrans integration
             \Midtrans\Config::$serverKey = config('services.midtrans.server_key');
             \Midtrans\Config::$isProduction = config('services.midtrans.is_production', false);
             \Midtrans\Config::$isSanitized = true;
@@ -58,21 +56,16 @@ class PaymentApiController extends Controller
             ]);
             $redirectUrl = 'https://app.midtrans.com/snap/v2/vtweb/' . $snapToken;
         } catch (\Exception $e) {
-            // Fall back to mock token
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'snap_token' => $snapToken,
-                'snap_redirect_url' => $redirectUrl,
-            ],
+        return ApiResponse::success([
+            'snap_token' => $snapToken,
+            'snap_redirect_url' => $redirectUrl,
         ]);
     }
 
     public function callback(Request $request)
     {
-        // Forward to webhook handler
         $webhook = app(PaymentWebhookController::class);
         return $webhook->midtrans($request);
     }
@@ -83,12 +76,12 @@ class PaymentApiController extends Controller
         $payment = $order->payments()->latest()->first();
         $gatewayPayment = GatewayPayment::where('order_id', $orderId)->latest()->first();
 
-        return response()->json(['data' => [
+        return ApiResponse::success([
             'transaction_id' => $gatewayPayment?->transaction_id ?? $payment?->reference ?? '',
             'status' => $gatewayPayment?->status ?? $order->payment_status ?? 'unpaid',
             'payment_type' => $gatewayPayment?->payment_type ?? $payment?->method ?? '',
             'paid_at' => $payment?->created_at ?? $gatewayPayment?->updated_at ?? null,
-        ]]);
+        ]);
     }
 
     public function verify(Request $request, $orderId)
@@ -97,11 +90,11 @@ class PaymentApiController extends Controller
 
         $payment = $order->payments()->latest()->first();
         if (!$payment) {
-            return response()->json(['success' => false, 'message' => 'No payment found'], 404);
+            return ApiResponse::error('No payment found', null, 404);
         }
 
         $payment->update(['status' => 'confirmed']);
 
-        return response()->json(['success' => true, 'message' => 'Payment verified']);
+        return ApiResponse::success(null, 'Payment verified');
     }
 }

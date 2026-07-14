@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\ValidationException;
 
 class AuthApiController extends Controller
 {
@@ -22,10 +22,7 @@ class AuthApiController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Email atau password salah',
-            ], 401);
+            return ApiResponse::error('Email atau password salah', null, 401);
         }
 
         $token = $user->createToken('api-token')->plainTextToken;
@@ -35,18 +32,15 @@ class AuthApiController extends Controller
             $branch = Branch::find($user->branch_id);
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'token' => $token,
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'role' => $user->roles->first()?->name ?? 'user',
-                    'branch_id' => $user->branch_id,
-                    'branch' => $branch ? ['id' => $branch->id, 'name' => $branch->name] : null,
-                ],
+        return ApiResponse::success([
+            'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->roles->first()?->name ?? 'user',
+                'branch_id' => $user->branch_id,
+                'branch' => $branch ? ['id' => $branch->id, 'name' => $branch->name] : null,
             ],
         ]);
     }
@@ -55,10 +49,7 @@ class AuthApiController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Berhasil logout',
-        ]);
+        return ApiResponse::success(null, 'Berhasil logout');
     }
 
     public function me(Request $request)
@@ -70,18 +61,15 @@ class AuthApiController extends Controller
             $branch = Branch::find($user->branch_id);
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'phone' => $user->phone ?? '',
-                'photo' => $user->photo ? Storage::url($user->photo) : null,
-                'role' => $user->roles->first()?->name ?? 'user',
-                'permissions' => $user->getAllPermissions()->pluck('name'),
-                'branch' => $branch ? ['id' => $branch->id, 'name' => $branch->name] : null,
-            ],
+        return ApiResponse::success([
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone' => $user->phone ?? '',
+            'photo' => $user->photo ? Storage::url($user->photo) : null,
+            'role' => $user->roles->first()?->name ?? 'user',
+            'permissions' => $user->getAllPermissions()->pluck('name'),
+            'branch' => $branch ? ['id' => $branch->id, 'name' => $branch->name] : null,
         ]);
     }
 
@@ -107,9 +95,6 @@ class AuthApiController extends Controller
 
         $user->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Profil berhasil diperbarui',
-        ]);
+        return ApiResponse::success(null, 'Profil berhasil diperbarui');
     }
 }

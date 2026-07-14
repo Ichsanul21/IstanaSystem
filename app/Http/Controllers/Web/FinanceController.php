@@ -20,7 +20,7 @@ class FinanceController extends Controller
             ->latest()
             ->paginate(15);
 
-        return view('finance.index', compact('journalEntries'));
+        return view('finance.dashboard', compact('journalEntries'));
     }
 
     public function accounts()

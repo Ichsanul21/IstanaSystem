@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\ChartOfAccount;
 use App\Models\JournalEntry;
@@ -36,13 +37,13 @@ class FinanceApiController extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
-        return response()->json(['data' => $query->latest()->paginate($request->per_page ?? 15)]);
+        return ApiResponse::paginate($query->latest()->paginate($request->per_page ?? 15));
     }
 
     public function journalShow($id)
     {
         $entry = JournalEntry::with(['lines.account', 'user'])->findOrFail($id);
-        return response()->json(['data' => $entry]);
+        return ApiResponse::success($entry);
     }
 
     public function journalStore(Request $request)
@@ -58,14 +59,14 @@ class FinanceApiController extends Controller
 
         $entry = $this->financeService->createJournalEntry($data['description'], $data['lines'], currentBranchId());
 
-        return response()->json(['success' => true, 'data' => $entry], 201);
+        return ApiResponse::success($entry, null, 201);
     }
 
     // COA
     public function coaIndex()
     {
         $accounts = ChartOfAccount::where('is_active', true)->get();
-        return response()->json(['data' => $accounts]);
+        return ApiResponse::success($accounts);
     }
 
     public function coaShow($id)
@@ -80,14 +81,14 @@ class FinanceApiController extends Controller
             default => $debit - $credit,
         };
 
-        return response()->json(['data' => [
+        return ApiResponse::success([
             'id' => $account->id,
             'code' => $account->code,
             'name' => $account->name,
             'type' => $account->type,
             'balance' => $balance,
             'is_active' => (bool) $account->is_active,
-        ]]);
+        ]);
     }
 
     public function coaLedger(Request $request, $id)
@@ -104,7 +105,7 @@ class FinanceApiController extends Controller
             $query->whereHas('journalEntry', fn($q) => $q->whereDate('created_at', '<=', $request->date_to));
         }
 
-        return response()->json(['data' => $query->with('journalEntry')->get()]);
+        return ApiResponse::success($query->with('journalEntry')->get());
     }
 
     // Reports
@@ -127,7 +128,7 @@ class FinanceApiController extends Controller
             return $account;
         });
 
-        return response()->json(['data' => $accounts]);
+        return ApiResponse::success($accounts);
     }
 
     public function profitLoss(Request $request)
@@ -150,13 +151,13 @@ class FinanceApiController extends Controller
             return $a;
         });
 
-        return response()->json(['data' => [
+        return ApiResponse::success([
             'revenue' => $revenue,
             'total_revenue' => $revenue->sum('balance'),
             'expenses' => $expenses,
             'total_expenses' => $expenses->sum('balance'),
             'net_income' => $revenue->sum('balance') - $expenses->sum('balance'),
-        ]]);
+        ]);
     }
 
     public function balanceSheet()
@@ -185,11 +186,11 @@ class FinanceApiController extends Controller
             return $a;
         });
 
-        return response()->json(['data' => [
+        return ApiResponse::success([
             'assets' => ['accounts' => $assets, 'total' => $assets->sum('balance')],
             'liabilities' => ['accounts' => $liabilities, 'total' => $liabilities->sum('balance')],
             'equity' => ['accounts' => $equity, 'total' => $equity->sum('balance')],
-        ]]);
+        ]);
     }
 
     // Expenses
@@ -207,7 +208,7 @@ class FinanceApiController extends Controller
             $query->whereDate('date', '<=', $request->date_to);
         }
 
-        return response()->json(['data' => $query->latest()->paginate($request->per_page ?? 15)]);
+        return ApiResponse::paginate($query->latest()->paginate($request->per_page ?? 15));
     }
 
     public function expensesStore(Request $request)
@@ -224,7 +225,7 @@ class FinanceApiController extends Controller
         $data['user_id'] = $request->user()->id;
         $expense = Expense::create($data);
 
-        return response()->json(['success' => true, 'data' => $expense], 201);
+        return ApiResponse::success($expense, null, 201);
     }
 
     // Tax
@@ -237,19 +238,19 @@ class FinanceApiController extends Controller
 
         $logs = TaxLog::where('period', $period)->get();
 
-        return response()->json(['data' => [
+        return ApiResponse::success([
             'regime' => $regime,
             'period' => $period,
             'rate' => $config?->rate ?? 0,
             'total_tax' => $logs->sum('amount'),
             'logs' => $logs,
-        ]]);
+        ]);
     }
 
     // Periods
     public function periodsIndex()
     {
-        return response()->json(['data' => AccountingPeriod::orderBy('start_date', 'desc')->get()]);
+        return ApiResponse::success(AccountingPeriod::orderBy('start_date', 'desc')->get());
     }
 
     public function periodsStore(Request $request)
@@ -262,7 +263,7 @@ class FinanceApiController extends Controller
 
         $period = AccountingPeriod::create($data);
 
-        return response()->json(['success' => true, 'data' => $period], 201);
+        return ApiResponse::success($period, null, 201);
     }
 
     public function periodsClose($id)
@@ -270,6 +271,6 @@ class FinanceApiController extends Controller
         $period = AccountingPeriod::findOrFail($id);
         $period->update(['is_closed' => true, 'closed_at' => now()]);
 
-        return response()->json(['success' => true, 'message' => 'Period closed']);
+        return ApiResponse::success(null, 'Period closed');
     }
 }

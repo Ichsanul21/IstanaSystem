@@ -2,7 +2,9 @@
     <x-slot:header>
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Daftar Cabang</h1>
+            @can('branch.create')
             <x-ui.button href="{{ route('admin.branches.create') }}" variant="primary">+ Tambah Cabang</x-ui.button>
+            @endcan
         </div>
     </x-slot:header>
 
@@ -27,7 +29,9 @@
                     </td>
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-2">
+                            @can('branch.update')
                             <x-ui.button href="{{ route('admin.branches.edit', $branch) }}" variant="ghost" size="sm">Edit</x-ui.button>
+                            @endcan
                         </div>
                     </td>
                 </tr>

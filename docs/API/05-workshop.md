@@ -1,10 +1,21 @@
 # API: Workshop
 
+> All responses use the standard ApiResponse envelope: `{"success": true, "data": ..., "message": "..."}`.
+> See [00-overview.md](00-overview.md) for the full response format spec.
+
 ## GET /api/v1/workshop/scan/{qrToken}
 
 Scan QR code on item label.
 
-**Response:**
+**Request:**
+```http
+GET /api/v1/workshop/scan/abc123def456
+Authorization: Bearer {token}
+X-Branch-Id: 1
+Accept: application/json
+```
+
+**Response (200):**
 ```json
 {
     "success": true,
@@ -25,7 +36,17 @@ Scan QR code on item label.
                 { "service": { "code": "ST" }, "quantity": 2, "status": "KERING" }
             ]
         }
-    }
+    },
+    "message": "QR code berhasil dipindai"
+}
+```
+
+**Error Response (404):**
+```json
+{
+    "success": false,
+    "message": "QR code tidak valid atau item tidak ditemukan",
+    "errors": null
 }
 ```
 
@@ -34,21 +55,30 @@ Scan QR code on item label.
 Update item status.
 
 **Request:**
+```http
+POST /api/v1/workshop/scan/abc123def456/update
+Authorization: Bearer {token}
+X-Branch-Id: 1
+Content-Type: application/json
+Accept: application/json
+```
+
 ```json
 {
     "note": "Cuci normal, noda membandel"
 }
 ```
 
-**Response:**
+**Response (200):**
 ```json
 {
     "success": true,
     "data": {
-        "new_status": { "code": "KERING", "name": "Kering", "sequence": 4 },
+        "new_status": { "id": 4, "code": "KERING", "name": "Kering", "sequence": 4 },
         "wa_link": "https://wa.me/62812xxxx?text=Halo...",
         "wa_required": true
-    }
+    },
+    "message": "Status item berhasil diperbarui"
 }
 ```
 
@@ -58,9 +88,18 @@ Get workshop queue (all items in production for this workshop).
 
 **Query:** `?status=&search=`
 
-**Response:**
+**Request:**
+```http
+GET /api/v1/workshop/queue?status=CUCI&search=Amir
+Authorization: Bearer {token}
+X-Branch-Id: 1
+Accept: application/json
+```
+
+**Response (200):**
 ```json
 {
+    "success": true,
     "data": [
         {
             "order_number": "CAB-20260709-00001",
@@ -69,7 +108,8 @@ Get workshop queue (all items in production for this workshop).
             "customer": "Bpk. Amir",
             "elapsed_time": "2h 15m"
         }
-    ]
+    ],
+    "message": "Data berhasil dimuat"
 }
 ```
 
@@ -77,9 +117,18 @@ Get workshop queue (all items in production for this workshop).
 
 Production statistics (for dashboard).
 
-**Response:**
+**Request:**
+```http
+GET /api/v1/workshop/stats
+Authorization: Bearer {token}
+X-Branch-Id: 1
+Accept: application/json
+```
+
+**Response (200):**
 ```json
 {
+    "success": true,
     "data": {
         "total_in_production": 45,
         "completed_today": 28,
@@ -92,6 +141,7 @@ Production statistics (for dashboard).
             "LIPAT": 7,
             "CEK": 3
         }
-    }
+    },
+    "message": "Data berhasil dimuat"
 }
 ```

@@ -10,7 +10,7 @@ class BackupController extends Controller
 {
     public function index()
     {
-        $files = collect(Storage::disk('local')->files('backups'))
+        $backups = collect(Storage::disk('local')->files('backups'))
             ->filter(fn ($f) => str_ends_with($f, '.zip'))
             ->map(fn ($f) => [
                 'filename' => basename($f),
@@ -21,9 +21,9 @@ class BackupController extends Controller
             ->sortByDesc('created_at')
             ->values();
 
-        $lastBackup = $files->first();
+        $lastBackup = $backups->first();
 
-        return view('settings.backup', compact('files', 'lastBackup'));
+        return view('settings.backup', compact('backups', 'lastBackup'));
     }
 
     public function create()

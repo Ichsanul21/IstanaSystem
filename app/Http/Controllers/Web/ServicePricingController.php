@@ -26,7 +26,7 @@ class ServicePricingController extends Controller
             ->latest()
             ->paginate(20);
 
-        return view('services.pricings', compact('pricings', 'branches', 'branchId', 'services'));
+        return view('services.pricing', compact('pricings', 'branches', 'branchId', 'services'));
     }
 
     public function create()
@@ -39,7 +39,7 @@ class ServicePricingController extends Controller
             ->latest()
             ->paginate(20);
 
-        return view('services.pricings', compact('pricings', 'branches', 'branchId', 'services'))
+        return view('services.pricing', compact('pricings', 'branches', 'branchId', 'services'))
             ->with('showForm', true);
     }
 
@@ -57,7 +57,7 @@ class ServicePricingController extends Controller
 
         ServicePricing::create($data);
 
-        return redirect()->route('admin.services.pricings.index', ['branch_id' => $data['branch_id']])
+        return redirect()->route('admin.services.pricing.index', ['branch_id' => $data['branch_id']])
             ->with('success', 'Harga layanan berhasil ditambahkan');
     }
 
@@ -71,7 +71,7 @@ class ServicePricingController extends Controller
             ->latest()
             ->paginate(20);
 
-        return view('services.pricings', compact('pricings', 'branches', 'branchId', 'services', 'pricing'))
+        return view('services.pricing', compact('pricings', 'branches', 'branchId', 'services', 'pricing'))
             ->with('showForm', true);
     }
 
@@ -89,7 +89,7 @@ class ServicePricingController extends Controller
 
         $pricing->update($data);
 
-        return redirect()->route('admin.services.pricings.index', ['branch_id' => $pricing->branch_id])
+        return redirect()->route('admin.services.pricing.index', ['branch_id' => $pricing->branch_id])
             ->with('success', 'Harga layanan berhasil diperbarui');
     }
 
@@ -99,10 +99,10 @@ class ServicePricingController extends Controller
             $branchId = $pricing->branch_id;
             $pricing->delete();
 
-            return redirect()->route('admin.services.pricings.index', ['branch_id' => $branchId])
+            return redirect()->route('admin.services.pricing.index', ['branch_id' => $branchId])
                 ->with('success', 'Harga layanan berhasil dihapus');
         } catch (\Exception $e) {
-            return redirect()->route('admin.services.pricings.index')
+            return redirect()->route('admin.services.pricing.index')
                 ->with('error', 'Gagal menghapus harga layanan');
         }
     }

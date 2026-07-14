@@ -2,7 +2,9 @@
     <x-slot:header>
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Chart of Accounts</h1>
+            @can('finance.coa')
             <x-ui.button href="#" variant="primary" size="sm">+ Tambah Akun</x-ui.button>
+            @endcan
         </div>
     </x-slot:header>
 

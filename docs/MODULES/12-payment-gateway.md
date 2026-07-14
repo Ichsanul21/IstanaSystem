@@ -44,7 +44,7 @@ Integration with Midtrans Snap API (formerly Veritrans) for online payments via 
 4. Midtrans returns Snap Token
 5. Snap popup opens → Customer chooses payment method
 6. Customer completes payment on Midtrans page
-7. Midtrans sends webhook (POST) to /api/payments/midtrans/callback
+7. Midtrans sends webhook (POST) to /api/webhook/midtrans/notification
 8. System updates gateway_payments + order payment_status
 9. If success → auto-journal + earn points + WA notification
 ```
@@ -52,7 +52,8 @@ Integration with Midtrans Snap API (formerly Veritrans) for online payments via 
 ## Webhook Handler
 
 ```php
-// Route: POST /api/payments/midtrans/callback (no CSRF)
+// Route: POST /api/webhook/midtrans/notification (no CSRF)
+// Registered in routes/webhook.php under 'webhook.*' name prefix
 // Signature verification:
 
 $signature = hash('sha512', 
@@ -68,6 +69,33 @@ match ($request->transaction_status) {
     'refund', 'partial_refund' => 'refund',
 };
 ```
+
+## API Payment Endpoints
+
+All API payment routes require `auth:sanctum` + `auth.sync` + `throttle:api`.
+
+```php
+Route::middleware(['auth:sanctum', 'auth.sync', 'throttle:api'])->group(function () {
+    // Snap token generation
+    Route::post('/payments/midtrans/snap', [PaymentApiController::class, 'snapToken'])
+        ->middleware('permission:payment.create');
+    // Payment status check
+    Route::get('/payments/{orderId}/status', [PaymentApiController::class, 'status'])
+        ->middleware('permission:payment.read');
+    // Manual verification
+    Route::post('/payments/{orderId}/verify', [PaymentApiController::class, 'verify'])
+        ->middleware('permission:payment.read');
+});
+```
+
+## Web Config Routes (admin panel)
+
+Gateway configuration is managed via the Settings module:
+
+| Action | Name | Permission |
+|--------|------|-----------|
+| Gateway config page | `admin.settings.gateway` | `manage_gateway_config` |
+| Gateway config update | `admin.settings.gateway.update` | `manage_gateway_config` |
 
 ## Manual Verification (Fallback)
 

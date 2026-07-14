@@ -27,8 +27,8 @@ class TrackingApiTest extends TestCase
 
         $response->assertOk()
             ->assertJsonPath('success', true)
-            ->assertJsonPath('order.id', $order->id)
-            ->assertJsonPath('order.qr_token', 'test-token-123');
+            ->assertJsonPath('data.id', $order->id)
+            ->assertJsonPath('data.qr_token', 'test-token-123');
     }
 
     public function test_status_returns_404_with_invalid_token(): void
@@ -58,7 +58,7 @@ class TrackingApiTest extends TestCase
 
         $response->assertOk()
             ->assertJsonPath('success', true)
-            ->assertJsonPath('order.id', $order->id);
+            ->assertJsonPath('data.verified', true);
     }
 
     public function test_verify_with_incorrect_pin(): void
@@ -78,7 +78,7 @@ class TrackingApiTest extends TestCase
             'pin' => 'wrong-pin',
         ]);
 
-        $response->assertForbidden()
+        $response->assertStatus(422)
             ->assertJson(['message' => 'Invalid PIN.']);
     }
 

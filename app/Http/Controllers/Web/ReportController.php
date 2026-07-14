@@ -42,8 +42,8 @@ class ReportController extends Controller
             ->when(request('date_to'), fn($q, $v) => $q->whereDate('created_at', '<=', $v));
 
         $totalPending = (clone $query)->where('status', OrderStatus::Pending->value)->count();
-        $totalProcessing = (clone $query)->where('status', OrderStatus::Processing->value)->count();
-        $totalCompleted = (clone $query)->where('status', OrderStatus::Completed->value)->count();
+        $totalProcessing = (clone $query)->whereIn('status', [OrderStatus::Received->value, OrderStatus::Washed->value, OrderStatus::Dried->value, OrderStatus::Ironed->value, OrderStatus::Packed->value])->count();
+        $totalCompleted = (clone $query)->whereIn('status', [OrderStatus::ReadyForPickup->value, OrderStatus::PickedUp->value])->count();
 
         $orders = $query->with('customer')->latest()->paginate(15);
 

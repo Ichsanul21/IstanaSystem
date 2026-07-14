@@ -13,14 +13,14 @@ QR code-based production tracking with sequential status updates. Each item has 
 
 | Seq | Code | Label | Description |
 |-----|------|-------|-------------|
-| 1 | `received` | Terima | Barcode scan & label |
-| 2 | `washed` | Cuci | Wash cycle |
-| 3 | `dried` | Kering | Dry process |
-| 4 | `ironed` | Lipat | Fold / Iron |
-| 5 | `packed` | Cek | Quality gate |
-| 6 | `ready_for_pickup` | Siap | Ready for pickup |
-| 7 | `picked_up` | Diambil | Picked up by customer |
-| 8 | `cancelled` | Dibatalkan | Cancelled |
+| 1 | `TERIMA` | Terima | Order diterima dari customer |
+| 2 | `PILAH` | Pilah | Pakaian dipilah berdasarkan jenis dan warna |
+| 3 | `CUCI` | Cuci | Proses pencucian |
+| 4 | `KERING` | Kering | Proses pengeringan |
+| 5 | `LIPAT` | Lipat | Pakaian dilipat dan di-packing |
+| 6 | `CEK` | Cek | Pengecekan kualitas akhir |
+| 7 | `SIAP` | Siap | Siap diambil customer |
+| 8 | `DIAMBIL` | Diambil | Sudah diambil customer |
 
 ### Rules
 
@@ -109,13 +109,42 @@ WORKSHOP → Order Detail (after scan)
 
 ## Routes
 
+All routes use the `admin.*` name prefix, nested under `auth` → `verified` → `branch` middleware.
+
 ```php
-Route::get('workshop', [WorkshopController::class, 'index'])->name('workshop.index');
-Route::get('workshop/scan', [WorkshopController::class, 'scan'])->name('workshop.scan');
-Route::post('workshop/scan', [WorkshopController::class, 'lookup']);
-Route::get('workshop/order/{order}', [WorkshopController::class, 'show'])->name('workshop.show');
-Route::put('workshop/items/{item}/status', [WorkshopController::class, 'updateStatus']);
+Route::middleware(['auth', 'verified'])->name('admin.')->group(function () {
+    Route::middleware(['branch'])->group(function () {
+        Route::get('/workshop', [WorkshopController::class, 'index'])
+            ->middleware('permission:workshop.read')->name('workshop.index');
+        Route::get('/workshop/scan', [WorkshopController::class, 'scan'])
+            ->middleware('permission:workshop.scan')->name('workshop.scan');
+        Route::post('/workshop/scan', [WorkshopController::class, 'lookup'])
+            ->middleware('permission:workshop.scan')->name('workshop.lookup');
+        Route::get('/workshop/orders/{order}', [WorkshopController::class, 'orderDetail'])
+            ->middleware('permission:workshop.read')->name('workshop.order-detail');
+        Route::post('/workshop/items/{orderItem}/status', [WorkshopController::class, 'updateStatus'])
+            ->middleware('permission:workshop.update_status|quality_check')->name('workshop.update-status');
+        Route::get('/workshop/items/{orderItem}', [WorkshopController::class, 'show'])
+            ->middleware('permission:workshop.read')->name('workshop.items.show');
+    });
+});
 ```
+
+**Route names reference:**
+| Action | Name | Permission |
+|--------|------|-----------|
+| Workshop index | `admin.workshop.index` | `workshop.read` |
+| Scan page | `admin.workshop.scan` | `workshop.scan` |
+| Lookup by code | `admin.workshop.lookup` | `workshop.scan` |
+| Order detail | `admin.workshop.order-detail` | `workshop.read` |
+| Update item status | `admin.workshop.update-status` | `workshop.update_status\|quality_check` |
+| Item show | `admin.workshop.items.show` | `workshop.read` |
+
+**Dedicated scanner route** (separate from workshop scan):
+| Action | Name | Permission |
+|--------|------|-----------|
+| Scanner index | `admin.scanner.index` | `workshop.scan` |
+| Scanner lookup | `admin.scanner.lookup` | `workshop.scan` |
 
 ## Files
 

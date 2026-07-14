@@ -26,7 +26,7 @@ class TrackingController extends Controller
         return view('tracking.show', compact('order'));
     }
 
-    public function verify(Request $request, $token)
+    public function verifyPin(Request $request, $token)
     {
         $request->validate(['pin' => 'required|string|size:2']);
 

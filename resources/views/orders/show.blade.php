@@ -6,10 +6,14 @@
                 <p class="text-sm text-gray-500 dark:text-gray-400">{{ $order->created_at ?? $order['created_at'] ?? '' }}</p>
             </div>
             <div class="flex items-center gap-2">
+                @can('order.update')
                 <x-ui.button href="{{ route('admin.orders.edit', $order->id ?? $order['id']) }}" variant="secondary" size="sm">Edit</x-ui.button>
-                <x-ui.button href="{{ route('admin.orders.print', $order->id ?? $order['id']) }}" variant="outline" size="sm">Print</x-ui.button>
+                @endcan
+                <x-ui.button href="{{ route('admin.orders.receipt', $order->id ?? $order['id']) }}" variant="outline" size="sm">Print</x-ui.button>
                 @if(($order->payment_status ?? $order['payment_status'] ?? '') !== 'paid')
-                    <x-ui.button href="{{ route('admin.payments.create', $order->id ?? $order['id']) }}" variant="primary" size="sm">Bayar</x-ui.button>
+                    @can('payment.create')
+                    <x-ui.button href="{{ route('admin.orders.payments.create', $order->id ?? $order['id']) }}" variant="primary" size="sm">Bayar</x-ui.button>
+                    @endcan
                 @endif
             </div>
         </div>
@@ -163,8 +167,8 @@
                                 <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $item->service_name ?? $item['service_name'] ?? '-' }}</p>
                                 @php
                                     $ps = $item->production_status ?? $item['production_status'] ?? 'received';
-                                    $psm = ['received' => 'gray', 'washed' => 'info', 'dried' => 'warning', 'ironed' => 'primary', 'packed' => 'warning', 'ready_for_pickup' => 'success', 'picked_up' => 'success', 'cancelled' => 'danger'];
-                                    $psl = ['received' => 'Diterima', 'washed' => 'Dicuci', 'dried' => 'Dikeringkan', 'ironed' => 'Disetrika', 'packed' => 'Dikemas', 'ready_for_pickup' => 'Siap Ambil', 'picked_up' => 'Diambil', 'cancelled' => 'Dibatalkan'];
+                                    $psm = ['draft' => 'gray', 'pending' => 'warning', 'received' => 'gray', 'washed' => 'info', 'dried' => 'warning', 'ironed' => 'primary', 'packed' => 'info', 'ready_for_pickup' => 'success', 'picked_up' => 'success', 'cancelled' => 'danger'];
+                                    $psl = ['draft' => 'Draft', 'pending' => 'Baru', 'received' => 'Diterima', 'washed' => 'Dicuci', 'dried' => 'Dikeringkan', 'ironed' => 'Disetrika', 'packed' => 'Dikemas', 'ready_for_pickup' => 'Siap Ambil', 'picked_up' => 'Diambil', 'cancelled' => 'Dibatalkan'];
                                 @endphp
                                 <x-ui.badge :variant="$psm[$ps] ?? 'gray'" size="sm">{{ $psl[$ps] ?? $ps }}</x-ui.badge>
                             </div>

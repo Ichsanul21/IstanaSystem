@@ -135,7 +135,7 @@ class OrderService
             ]);
 
             if ($paymentStatus === 'paid') {
-                $order->update(['status' => OrderStatus::Processing->value]);
+                $order->update(['status' => OrderStatus::Received->value]);
             }
 
             return $payment;

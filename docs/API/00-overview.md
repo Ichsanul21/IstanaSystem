@@ -73,11 +73,38 @@ Response:
 
 ## Rate Limiting
 
-| Route Group | Limit |
-|-------------|-------|
-| Authenticated | 60 req/min |
-| Public (tracking) | 30 req/min |
-| Webhook | 120 req/min |
+| Route Group | Limit | Window |
+|-------------|-------|--------|
+| Authenticated (API CRUD) | 60 req/min | per user |
+| Public (tracking) | 30 req/min | per IP |
+| Webhook (Midtrans) | 120 req/min | per IP |
+
+Exceeding the limit returns HTTP 429 with:
+```json
+{
+    "success": false,
+    "message": "Too Many Requests",
+    "errors": null
+}
+```
+
+## X-Branch-Id Header
+
+The `X-Branch-Id` header sets the branch context for the request via `SetBranchFromHeader` middleware. This replaces the session-based branch selection used by the Blade web UI.
+
+| Header | Type | Required | Description |
+|--------|------|----------|-------------|
+| `X-Branch-Id` | integer | No* | Branch ID to scope queries to |
+
+> *Required for most admin endpoints. Omitting it may return data across all branches or fail validation depending on the endpoint.
+
+**Example:**
+```http
+GET /api/v1/orders
+Authorization: Bearer {token}
+X-Branch-Id: 1
+Accept: application/json
+```
 
 ## Standard Headers
 
@@ -120,3 +147,4 @@ X-Branch-Id: 1                 (optional branch context)
 | [Settings](11-settings.md) | `/settings` | Yes |
 | [Payment Gateway](12-payment-gateway.md) | `/payments` | Mixed |
 | [Customer Tracking](13-customer-tracking.md) | `/track` | No |
+| Customer Search | `/customers/search` | Yes (sync) |

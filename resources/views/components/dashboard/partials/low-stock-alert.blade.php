@@ -1,27 +1,22 @@
 @props(['items' => []])
-<x-ui.card>
-    <x-slot:header>
-        <div class="flex items-center justify-between">
-            <h2 class="text-lg font-bold text-red-600 dark:text-red-400">Peringatan Stok Menipis</h2>
-            <x-ui.button variant="ghost" size="sm" href="{{ route('admin.inventory.index') }}">Kelola</x-ui.button>
-        </div>
-    </x-slot:header>
-    @if(count($items) > 0)
-    <div class="space-y-3">
-        @foreach($items as $item)
-        <div class="flex items-center justify-between p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800">
+<div class="rounded-xl border border-lo-gray dark:border-dark-700 bg-white dark:bg-dark-900 overflow-hidden">
+    <div class="px-5 lg:px-8 py-4 border-b border-lo-gray dark:border-dark-700 flex items-center justify-between">
+        <h3 class="text-lg font-bold text-dark dark:text-white">Low Stock Alert</h3>
+        <x-ui.badge variant="warning" size="sm">{{ count($items) }} items</x-ui.badge>
+    </div>
+    <div class="divide-y divide-lo-gray dark:divide-dark-700">
+        @forelse($items as $item)
+        <div class="px-5 lg:px-8 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors">
             <div>
-                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $item['name'] }}</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $item['code'] }}</p>
+                <p class="text-sm font-medium text-dark dark:text-white">{{ $item->name }}</p>
+                <p class="text-xs text-black/40 dark:text-white/40 mt-0.5">{{ $item->category ?? '—' }}</p>
             </div>
             <div class="text-right">
-                <p class="text-sm font-bold text-red-600 dark:text-red-400">{{ number_format($item['stock'], 0, ',', '.') }} {{ $item['unit'] }}</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">Min. {{ number_format($item['min_stock'], 0, ',', '.') }}</p>
+                <x-ui.badge variant="danger" size="sm">{{ $item->stock }} left</x-ui.badge>
             </div>
         </div>
-        @endforeach
+        @empty
+        <div class="px-5 lg:px-8 py-8 text-center text-sm text-black/40 dark:text-white/40">Semua stok aman</div>
+        @endforelse
     </div>
-    @else
-    <p class="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">Semua stok dalam kondisi aman.</p>
-    @endif
-</x-ui.card>
+</div>

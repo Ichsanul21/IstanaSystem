@@ -25,7 +25,7 @@
                 value="{{ old('auto_confirm', $settingValues['auto_confirm'] ?? '0') }}"
                 help="Konfirmasi order baru secara otomatis"
             />
-            @php $defaultStatusOptions = collect(\App\Enums\OrderStatus::cases())->reject(fn($s) => $s === \App\Enums\OrderStatus::Completed || $s === \App\Enums\OrderStatus::Cancelled)->mapWithKeys(fn($s) => [$s->value => $s->label()])->toArray(); @endphp
+            @php $defaultStatusOptions = collect(\App\Enums\OrderStatus::cases())->reject(fn($s) => $s->isTerminal())->mapWithKeys(fn($s) => [$s->value => $s->label()])->toArray(); @endphp
             <x-ui.select
                 name="default_status"
                 label="Status Default Order Baru"

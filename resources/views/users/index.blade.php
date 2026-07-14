@@ -2,7 +2,9 @@
     <x-slot:header>
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Manajemen User</h1>
+            @can('user.create')
             <x-ui.button href="{{ route('admin.users.create') }}" variant="primary">+ Tambah User</x-ui.button>
+            @endcan
         </div>
     </x-slot:header>
 
@@ -37,7 +39,9 @@
                     <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{{ $user->branch->name ?? '-' }}</td>
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-2">
+                            @can('user.update')
                             <x-ui.button href="{{ route('admin.users.edit', $user) }}" variant="ghost" size="sm">Edit</x-ui.button>
+                            @endcan
                         </div>
                     </td>
                 </tr>

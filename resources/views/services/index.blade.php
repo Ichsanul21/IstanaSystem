@@ -2,7 +2,7 @@
     <x-slot:header>
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Layanan</h1>
-            @can('admin-access')
+            @can('create_services')
             <x-ui.button href="{{ route('admin.services.create') }}" variant="primary">+ Tambah Layanan</x-ui.button>
             @endcan
         </div>
@@ -37,8 +37,9 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                             <div class="flex items-center gap-2">
+                                @can('edit_services')
                                 <x-ui.button href="{{ route('admin.services.edit', $service) }}" variant="ghost" size="sm">Edit</x-ui.button>
-                                @can('admin-access')
+                                @endcan
                                 <form method="POST" action="{{ route('admin.services.destroy', $service) }}" onsubmit="return confirm('Hapus layanan ini?')" class="inline">
                                     @csrf @method('DELETE')
                                     <x-ui.button type="submit" size="sm" variant="ghost" class="text-red-600 hover:text-red-700">Hapus</x-ui.button>
@@ -60,13 +61,13 @@
             @endif
         </x-ui.card>
 
-        @can('admin-access')
+        @can('edit_service_pricing')
         <x-ui.card>
             <x-slot:header>
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Harga per Cabang</h2>
             </x-slot:header>
             <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">Atur harga layanan untuk setiap cabang.</p>
-            <x-ui.button href="{{ route('admin.services.pricings.index', ['branch_id' => currentBranchId()]) }}" variant="outline" size="sm">Kelola Harga</x-ui.button>
+            <x-ui.button href="{{ route('admin.services.pricing.index', ['branch_id' => currentBranchId()]) }}" variant="outline" size="sm">Kelola Harga</x-ui.button>
         </x-ui.card>
         @endcan
     </div>

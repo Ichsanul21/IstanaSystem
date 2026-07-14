@@ -13,7 +13,7 @@ class ProductionService
     {
         return OrderItem::whereHas('order', function ($q) use ($branchId) {
             $q->when($branchId, fn($qq) => $qq->where('branch_id', $branchId))
-                ->whereNotIn('status', [OrderStatus::Completed->value, OrderStatus::Cancelled->value]);
+                ->whereNotIn('status', [OrderStatus::ReadyForPickup->value, OrderStatus::PickedUp->value, OrderStatus::Cancelled->value]);
         })->count();
     }
 
@@ -26,7 +26,7 @@ class ProductionService
             ->addSelect(DB::raw('(SELECT ps.code FROM order_item_status_logs oisl JOIN production_statuses ps ON ps.id = oisl.production_status_id WHERE oisl.order_item_id = order_items.id ORDER BY oisl.id DESC LIMIT 1) as current_status'))
             ->whereHas('order', function ($q) use ($branchId) {
                 $q->when($branchId, fn($qq) => $qq->where('branch_id', $branchId))
-                    ->whereNotIn('status', [OrderStatus::Completed->value, OrderStatus::Cancelled->value]);
+                    ->whereNotIn('status', [OrderStatus::ReadyForPickup->value, OrderStatus::PickedUp->value, OrderStatus::Cancelled->value]);
             })
             ->get();
 
@@ -43,7 +43,7 @@ class ProductionService
     {
         $items = OrderItem::whereHas('order', function ($q) use ($branchId) {
             $q->when($branchId, fn($qq) => $qq->where('branch_id', $branchId))
-                ->where('status', OrderStatus::Completed->value);
+                ->where('status', OrderStatus::PickedUp->value);
         })->whereHas('statusLogs')->get();
 
         $totalMinutes = 0;

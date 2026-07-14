@@ -33,7 +33,7 @@ class DashboardService
             });
         $totalRevenue = (float) $paymentQuery->sum('amount');
 
-        $pendingOrders = (clone $query)->whereNotIn('status', [OrderStatus::Completed->value, OrderStatus::Cancelled->value])->count();
+        $pendingOrders = (clone $query)->whereNotIn('status', [OrderStatus::ReadyForPickup->value, OrderStatus::PickedUp->value, OrderStatus::Cancelled->value])->count();
 
         $totalCustomers = Customer::when($branchId, fn($q) => $q->where('branch_id', $branchId))->count();
 

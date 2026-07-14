@@ -187,3 +187,33 @@ resources/views/settings/activity-logs.blade.php
 resources/views/settings/backup.blade.php
 resources/views/exports/revenue.blade.php (PDF template)
 ```
+
+## Routes
+
+All routes use the `admin.*` name prefix, nested under `auth` → `verified` → `branch` middleware.
+
+**Audit Trail:**
+| Action | Name | Permission |
+|--------|------|-----------|
+| Audit page | `admin.audit.index` | `view_activity_logs` |
+| Audit export page | `admin.audit.export` | `view_activity_logs` |
+| Activity logs | `admin.activity-logs.index` | `view_activity_logs` |
+
+**Backup:**
+| Action | Name | Permission |
+|--------|------|-----------|
+| Backup management | `admin.backup.index` | `run_backup\|view_system_info` |
+| Run backup | `admin.backup.create` | `run_backup` |
+| Download backup | `admin.backup.download` | `run_backup` |
+| Delete backup | `admin.backup.destroy` | `run_backup` |
+
+**Exports** (group middleware: `permission:export_data`):
+| Action | Name |
+|--------|------|
+| Revenue Excel | `admin.exports.revenue` |
+| Orders Excel | `admin.exports.orders` |
+| Customers Excel | `admin.exports.customers` |
+| Inventory Excel | `admin.exports.inventory` |
+| Tax Excel | `admin.exports.tax` |
+| Production Excel | `admin.exports.production` |
+| Journal Excel | `admin.exports.journal` |

@@ -31,7 +31,7 @@ class RevenueService
                 $q->when($branchId, fn($qq) => $qq->where('branch_id', $branchId))
                     ->when($dateFrom, fn($qq) => $qq->whereDate('created_at', '>=', $dateFrom))
                     ->when($dateTo, fn($qq) => $qq->whereDate('created_at', '<=', $dateTo))
-                    ->whereIn('status', [OrderStatus::Completed->value, OrderStatus::Processing->value]);
+                    ->whereIn('status', [OrderStatus::ReadyForPickup->value, OrderStatus::PickedUp->value]);
             })
             ->groupBy('service_name')
             ->pluck('total', 'service_name')

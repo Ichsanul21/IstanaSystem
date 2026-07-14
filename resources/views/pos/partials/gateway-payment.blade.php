@@ -27,7 +27,7 @@
                 loading: false,
                 requestSnap() {
                     this.loading = true;
-                    fetch('{{ route("admin.payments.snap-token") }}', {
+                    fetch('/api/v1/payments/midtrans/snap', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                         body: JSON.stringify({ order_id: '{{ $order->id ?? '' }}' })

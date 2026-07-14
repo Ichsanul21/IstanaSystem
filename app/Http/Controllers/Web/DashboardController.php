@@ -58,7 +58,7 @@ class DashboardController extends Controller
 
         $topCustomers = \App\Models\Customer::withSum(['orders as total_spent' => function ($q) use ($branchId) {
             $q->when($branchId, fn($qq) => $qq->where('branch_id', $branchId))
-                ->whereIn('status', [OrderStatus::Completed->value, OrderStatus::Processing->value]);
+                ->whereNotIn('status', [OrderStatus::Draft->value, OrderStatus::Pending->value, OrderStatus::Cancelled->value]);
         }], 'grand_total')
             ->whereHas('orders', function ($q) use ($branchId) {
                 $q->when($branchId, fn($qq) => $qq->where('branch_id', $branchId));

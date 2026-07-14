@@ -3,8 +3,10 @@
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Laporan Pelanggan</h1>
             <div class="flex items-center gap-3">
+                @can('report.export')
                 <x-ui.button href="#" variant="outline" size="sm">Export PDF</x-ui.button>
                 <x-ui.button href="#" variant="primary" size="sm">Export Excel</x-ui.button>
+                @endcan
             </div>
         </div>
     </x-slot:header>

@@ -2,7 +2,7 @@
     <x-slot:header>
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Detail Pembayaran</h1>
-            <x-ui.button href="{{ route('admin.orders.print', $payment->order_id ?? $payment['order_id']) }}" variant="outline" size="sm">Print Receipt</x-ui.button>
+            <x-ui.button href="{{ route('admin.orders.receipt', $payment->order_id ?? $payment['order_id']) }}" variant="outline" size="sm">Print Receipt</x-ui.button>
         </div>
     </x-slot:header>
 

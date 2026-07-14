@@ -34,7 +34,7 @@ class OrderApiTest extends TestCase
         $this->actingAs($this->user)
             ->getJson('/api/v1/orders')
             ->assertOk()
-            ->assertJsonStructure(['data', 'links', 'total', 'current_page']);
+            ->assertJsonStructure(['success', 'data', 'meta' => ['current_page', 'last_page', 'per_page', 'total']]);
     }
 
     public function test_show_returns_order(): void
@@ -44,7 +44,7 @@ class OrderApiTest extends TestCase
         $this->actingAs($this->user)
             ->getJson("/api/v1/orders/{$order->id}")
             ->assertOk()
-            ->assertJsonPath('id', $order->id);
+            ->assertJsonPath('data.id', $order->id);
     }
 
     public function test_store_creates_order(): void
@@ -61,7 +61,7 @@ class OrderApiTest extends TestCase
             ]);
 
         $response->assertCreated()
-            ->assertJsonPath('customer_id', $customer->id);
+            ->assertJsonPath('data.customer_id', $customer->id);
     }
 
     public function test_store_validates_items(): void
@@ -83,11 +83,11 @@ class OrderApiTest extends TestCase
 
         $this->actingAs($this->user)
             ->putJson("/api/v1/orders/{$order->id}/status", [
-                'status' => 'processing',
+                'status' => 'received',
             ])
             ->assertOk();
 
-        $this->assertEquals('processing', $order->fresh()->status);
+        $this->assertEquals('received', $order->fresh()->status);
     }
 
     public function test_unauthenticated_access_is_blocked(): void

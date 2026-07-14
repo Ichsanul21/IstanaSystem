@@ -16,9 +16,15 @@
                 @endif
             </div>
             <div class="flex items-center gap-3">
+                @can('inventory.update')
                 <x-ui.button href="{{ route('admin.inventory.edit', $item) }}" variant="outline">Edit</x-ui.button>
+                @endcan
+                @can('stock_in')
                 <x-ui.button x-on:click="$dispatch('open-modal', 'add-stock-modal')" variant="primary">Tambah Stok</x-ui.button>
+                @endcan
+                @can('stock_out')
                 <x-ui.button x-on:click="$dispatch('open-modal', 'transfer-modal')" variant="secondary">Transfer</x-ui.button>
+                @endcan
             </div>
         </div>
     </x-slot:header>

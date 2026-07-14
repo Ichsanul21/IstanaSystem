@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\InventoryItem;
-use App\Models\InventoryBatch;
 use App\Services\Inventory\InventoryService;
 use App\Services\Inventory\FifoService;
 use Illuminate\Http\Request;
@@ -33,14 +33,14 @@ class InventoryApiController extends Controller
             $query->where('is_active', $request->boolean('is_active'));
         }
 
-        return response()->json(['data' => $query->latest()->paginate($request->per_page ?? 15)]);
+        return ApiResponse::paginate($query->latest()->paginate($request->per_page ?? 15));
     }
 
     public function itemsShow($id)
     {
         $item = InventoryItem::with(['batches' => fn($q) => $q->where('branch_id', currentBranchId())])->findOrFail($id);
 
-        return response()->json(['data' => $item]);
+        return ApiResponse::success($item);
     }
 
     public function itemsStore(Request $request)
@@ -57,7 +57,7 @@ class InventoryApiController extends Controller
         $data['code'] = 'INV-' . strtoupper(\Illuminate\Support\Str::random(6));
         $item = InventoryItem::create($data);
 
-        return response()->json(['success' => true, 'data' => $item], 201);
+        return ApiResponse::success($item, null, 201);
     }
 
     public function itemsUpdate(Request $request, $id)
@@ -75,7 +75,7 @@ class InventoryApiController extends Controller
 
         $item->update($data);
 
-        return response()->json(['success' => true, 'message' => 'Item updated']);
+        return ApiResponse::success(null, 'Item updated');
     }
 
     public function stockIndex(Request $request)
@@ -84,7 +84,7 @@ class InventoryApiController extends Controller
 
         $items = InventoryItem::with(['batches' => fn($q) => $q->where('branch_id', $branchId)])->get();
 
-        return response()->json(['data' => $items->map(fn($item) => [
+        return ApiResponse::success($items->map(fn($item) => [
             'item_id' => $item->id,
             'item' => ['code' => $item->code, 'name' => $item->name, 'unit' => $item->unit],
             'branch_id' => $branchId,
@@ -92,14 +92,14 @@ class InventoryApiController extends Controller
             'total_value' => (float) $item->batches->sum(fn($b) => $b->quantity * $b->unit_cost),
             'min_stock' => (float) ($item->min_stock ?? 0),
             'is_low' => $item->batches->sum('quantity') <= $item->min_stock,
-        ])]);
+        ]));
     }
 
     public function stockDetail(Request $request, $itemId)
     {
         $item = InventoryItem::with(['batches' => fn($q) => $q->where('branch_id', currentBranchId())])->findOrFail($itemId);
 
-        return response()->json(['data' => [
+        return ApiResponse::success([
             'item' => ['name' => $item->name],
             'total_quantity' => (float) $item->batches->sum('quantity'),
             'total_value' => (float) $item->batches->sum(fn($b) => $b->quantity * $b->unit_cost),
@@ -109,7 +109,7 @@ class InventoryApiController extends Controller
                 'unit_cost' => (float) $b->unit_cost,
                 'received_at' => $b->received_at?->toDateString(),
             ]),
-        ]]);
+        ]);
     }
 
     public function stockIn(Request $request)
@@ -126,7 +126,7 @@ class InventoryApiController extends Controller
         $item = InventoryItem::findOrFail($data['item_id']);
         $this->fifoService->addStock($item, $data['branch_id'], $data['quantity'], $data['unit_cost'], $data['note'] ?? null);
 
-        return response()->json(['success' => true, 'message' => 'Stock added']);
+        return ApiResponse::success(null, 'Stock added');
     }
 
     public function stockOut(Request $request)
@@ -141,7 +141,7 @@ class InventoryApiController extends Controller
         $item = InventoryItem::findOrFail($data['item_id']);
         $this->fifoService->deductStock($item, $data['branch_id'], $data['quantity'], $data['note'] ?? null);
 
-        return response()->json(['success' => true, 'message' => 'Stock deducted']);
+        return ApiResponse::success(null, 'Stock deducted');
     }
 
     public function stockAdjust(Request $request)
@@ -162,7 +162,7 @@ class InventoryApiController extends Controller
             $this->fifoService->deductStock($item, $data['branch_id'], $data['quantity'], $data['note'] ?? 'Adjustment -');
         }
 
-        return response()->json(['success' => true, 'message' => 'Stock adjusted']);
+        return ApiResponse::success(null, 'Stock adjusted');
     }
 
     public function stockTransfer(Request $request)
@@ -179,7 +179,7 @@ class InventoryApiController extends Controller
         $this->fifoService->deductStock($item, $data['from_branch_id'], $data['quantity'], 'Transfer to branch ' . $data['to_branch_id']);
         $this->fifoService->addStock($item, $data['to_branch_id'], $data['quantity'], 0, 'Transfer from branch ' . $data['from_branch_id']);
 
-        return response()->json(['success' => true, 'message' => 'Stock transferred']);
+        return ApiResponse::success(null, 'Stock transferred');
     }
 
     public function alerts()
@@ -187,13 +187,13 @@ class InventoryApiController extends Controller
         $branchId = currentBranchId();
         $items = $this->inventoryService->getLowStockItems($branchId);
 
-        return response()->json(['data' => $items->map(fn($item) => [
+        return ApiResponse::success($items->map(fn($item) => [
             'id' => $item->id,
             'code' => $item->code,
             'name' => $item->name,
             'stock' => (float) $item->batches->sum('quantity'),
             'min_stock' => (float) ($item->min_stock ?? 0),
             'unit' => $item->unit,
-        ])]);
+        ]));
     }
 }

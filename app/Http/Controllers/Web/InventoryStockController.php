@@ -4,12 +4,49 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\InventoryItem;
+use App\Models\InventoryStock;
 use App\Services\Inventory\FifoService;
 use Illuminate\Http\Request;
 
 class InventoryStockController extends Controller
 {
     public function __construct(protected FifoService $fifoService) {}
+
+    public function index()
+    {
+        $stocks = InventoryStock::query()
+            ->with('item')
+            ->forCurrentBranch()
+            ->latest()
+            ->paginate(25);
+
+        return view('inventory.stock.index', compact('stocks'));
+    }
+
+    public function create()
+    {
+        $items = InventoryItem::all();
+
+        return view('inventory.stock.create', compact('items'));
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'inventory_item_id' => 'required|exists:inventory_items,id',
+            'quantity' => 'required|numeric|min:0.01',
+            'unit_price' => 'nullable|numeric|min:0',
+            'batch_number' => 'nullable|string|max:255',
+            'expired_at' => 'nullable|date',
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        $data['branch_id'] = currentBranchId();
+        InventoryStock::create($data);
+
+        return redirect()->route('admin.inventory.stock.index')
+            ->with('success', 'Stok berhasil ditambahkan.');
+    }
 
     public function out(InventoryItem $item)
     {

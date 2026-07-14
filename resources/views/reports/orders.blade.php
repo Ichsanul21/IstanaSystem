@@ -3,8 +3,10 @@
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Laporan Order</h1>
             <div class="flex items-center gap-3">
+                @can('report.export')
                 <x-ui.button href="#" variant="outline" size="sm">Export PDF</x-ui.button>
                 <x-ui.button href="#" variant="primary" size="sm">Export Excel</x-ui.button>
+                @endcan
             </div>
         </div>
     </x-slot:header>
@@ -23,7 +25,7 @@
             <p class="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">{{ $totalProcessing }}</p>
         </x-ui.card>
         <x-ui.card class="text-center">
-            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Selesai</p>
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Siap / Diambil</p>
             <p class="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{{ $totalCompleted }}</p>
         </x-ui.card>
     </div>

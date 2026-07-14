@@ -68,4 +68,40 @@ class ExportController extends Controller
             return redirect()->back()->with('error', 'Gagal mengekspor data inventaris.');
         }
     }
+
+    public function taxExcel(Request $request)
+    {
+        try {
+            $data = [];
+            $headers = ['Periode', 'Pendapatan', 'Pajak', 'Status'];
+
+            return $this->exportService->excel($data, 'tax.xlsx', $headers);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal mengekspor data pajak.');
+        }
+    }
+
+    public function productionExcel(Request $request)
+    {
+        try {
+            $data = [];
+            $headers = ['Tanggal', 'Item', 'Status', 'Durasi'];
+
+            return $this->exportService->excel($data, 'production.xlsx', $headers);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal mengekspor data produksi.');
+        }
+    }
+
+    public function journalExcel(Request $request)
+    {
+        try {
+            $data = [];
+            $headers = ['Tanggal', 'No. Jurnal', 'Akun', 'Debit', 'Kredit'];
+
+            return $this->exportService->excel($data, 'journal.xlsx', $headers);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal mengekspor data jurnal.');
+        }
+    }
 }

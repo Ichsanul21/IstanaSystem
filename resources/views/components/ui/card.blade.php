@@ -1,21 +1,28 @@
 @props([
     'padding' => 'md',
     'class' => '',
+    'variant' => 'default',
 ])
 
 @php
 $paddingClasses = match ($padding) {
     'none' => 'p-0',
-    'sm' => 'p-4',
-    'md' => 'p-6',
-    'lg' => 'p-8',
-    default => 'p-6',
+    'sm' => 'p-4 lg:p-5',
+    'md' => 'p-5 lg:p-8',
+    'lg' => 'p-6 lg:p-10',
+    default => 'p-5 lg:p-8',
+};
+
+$variantClasses = match ($variant) {
+    'metric' => '',
+    'hover' => 'svc-card',
+    default => '',
 };
 @endphp
 
-<div {{ $attributes->merge(['class' => "bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 {$class}"]) }}>
+<div {{ $attributes->merge(['class' => "bg-white dark:bg-dark-900 rounded-xl shadow-theme-sm border border-lo-gray dark:border-dark-700 {$variantClasses} {$class}"]) }}>
     @isset($header)
-        <div class="border-b border-gray-200 dark:border-gray-700 {{ $paddingClasses }}">
+        <div class="border-b border-lo-gray dark:border-dark-700 {{ $paddingClasses }}">
             {{ $header }}
         </div>
     @endisset
@@ -31,7 +38,7 @@ $paddingClasses = match ($padding) {
     @endisset
 
     @isset($footer)
-        <div class="border-t border-gray-200 dark:border-gray-700 {{ $paddingClasses }}">
+        <div class="border-t border-lo-gray dark:border-dark-700 {{ $paddingClasses }}">
             {{ $footer }}
         </div>
     @endisset

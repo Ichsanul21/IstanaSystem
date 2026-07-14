@@ -103,7 +103,7 @@ $selectedPeriod = request('period', $dateFrom && $dateTo ? 'custom' : 'today');
             ])
         </div>
 
-        @can('finance-access')
+        @can('finance.read')
         <div x-show="activeTab === 'keuangan'" x-cloak>
             @include('dashboard.tabs.keuangan', [
                 'revenueVsExpense' => $revenueVsExpense,

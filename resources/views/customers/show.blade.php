@@ -11,8 +11,12 @@
                 @endif
             </div>
             <div class="flex items-center gap-3">
+                @can('customer.update')
                 <x-ui.button href="{{ route('admin.customers.edit', $customer) }}" variant="outline">Edit</x-ui.button>
+                @endcan
+                @can('customer.update')
                 <x-ui.button x-on:click="$dispatch('open-modal', 'add-points-modal')" variant="primary">Tambah Poin</x-ui.button>
+                @endcan
             </div>
         </div>
     </x-slot:header>
@@ -122,7 +126,9 @@
                     <x-slot:header>
                         <div class="flex items-center justify-between">
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Riwayat Poin</h3>
+                            @can('customer.update')
                             <x-ui.button x-on:click="$dispatch('open-modal', 'add-points-modal')" variant="primary" size="sm">Tambah Poin</x-ui.button>
+                            @endcan
                         </div>
                     </x-slot:header>
                     <x-ui.table :headers="[['label' => 'Tanggal'], ['label' => 'Tipe'], ['label' => 'Deskripsi'], ['label' => 'Jumlah'], ['label' => 'Kadaluarsa']]">
@@ -154,6 +160,7 @@
                     <x-slot:header>
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Catatan</h3>
                     </x-slot:header>
+                    @can('customer.update')
                     <form method="POST" action="{{ route('admin.customers.notes', $customer) }}" class="space-y-4">
                         @csrf
                         <x-ui.textarea name="notes" label="Catatan Pelanggan" rows="4">{{ $customer->notes }}</x-ui.textarea>
@@ -161,6 +168,7 @@
                             <x-ui.button type="submit" variant="primary">Simpan Catatan</x-ui.button>
                         </div>
                     </form>
+                    @endcan
                 </x-ui.card>
             </x-slot:tab-notes>
         </x-ui.tabs>

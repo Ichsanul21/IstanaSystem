@@ -122,6 +122,37 @@ DASHBOARD
 | Tax | Ringkasan pajak | Excel, PDF |
 | Production | Riwayat status per item | Excel, PDF |
 
+## Routes
+
+All routes use the `admin.*` name prefix, nested under `auth` → `verified` → `branch` middleware.
+
+**Dashboard:**
+| Action | Name | Middleware |
+|--------|------|-----------|
+| Home (root `/`) | `admin.home` | `branch` |
+| Dashboard | `admin.dashboard` | `branch` |
+
+**Reports** (group middleware: `permission:report.read|view_financial_reports`):
+| Action | Name | Permission |
+|--------|------|-----------|
+| Revenue report | `admin.reports.revenue` | `report.read\|view_financial_reports` |
+| Orders report | `admin.reports.orders` | (same) |
+| Customers report | `admin.reports.customers` | (same) |
+| Inventory report | `admin.reports.inventory` | (same) |
+| Tax report | `admin.reports.tax` | (same) |
+| Production report | `admin.reports.production` | (same) |
+
+**Exports** (group middleware: `permission:export_data`):
+| Action | Name |
+|--------|------|
+| Revenue Excel | `admin.exports.revenue` |
+| Orders Excel | `admin.exports.orders` |
+| Customers Excel | `admin.exports.customers` |
+| Inventory Excel | `admin.exports.inventory` |
+| Tax Excel | `admin.exports.tax` |
+| Production Excel | `admin.exports.production` |
+| Journal Excel | `admin.exports.journal` |
+
 ## Files
 
 ```

@@ -2,7 +2,9 @@
     <x-slot:header>
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Finance Dashboard</h1>
+            @can('finance.journal')
             <x-ui.button href="{{ route('admin.finance.journal') }}" variant="primary">Lihat Jurnal</x-ui.button>
+            @endcan
         </div>
     </x-slot:header>
 

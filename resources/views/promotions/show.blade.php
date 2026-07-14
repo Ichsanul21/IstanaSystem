@@ -12,7 +12,9 @@
                     <x-ui.badge variant="danger">Nonaktif</x-ui.badge>
                 @endif
             </div>
+            @can('promotion.update')
             <x-ui.button href="{{ route('admin.promotions.edit', $promotion) }}" variant="outline">Edit</x-ui.button>
+            @endcan
         </div>
     </x-slot:header>
 

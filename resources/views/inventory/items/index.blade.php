@@ -2,10 +2,12 @@
     <x-slot:header>
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Inventaris</h1>
+            @can('inventory.create')
             <x-ui.button href="{{ route('admin.inventory.create') }}" variant="primary">
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                 Tambah Item
             </x-ui.button>
+            @endcan
         </div>
     </x-slot:header>
 

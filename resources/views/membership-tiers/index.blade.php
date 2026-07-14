@@ -2,6 +2,9 @@
     <x-slot:header>
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Tier Member</h1>
+            @can('membership.create')
+            <x-ui.button href="{{ route('admin.membership-tiers.create') }}" variant="primary">+ Tambah Tier</x-ui.button>
+            @endcan
         </div>
     </x-slot:header>
 
@@ -32,7 +35,9 @@
                             <x-ui.badge :variant="$tier->is_active ? 'success' : 'danger'">{{ $tier->is_active ? 'Aktif' : 'Nonaktif' }}</x-ui.badge>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm">
-                            <x-ui.button href="{{ route('admin.membership-tiers.edit', $tier) }}" variant="ghost" size="sm">Edit</x-ui.button>
+                                @can('membership.update')
+                                <x-ui.button href="{{ route('admin.membership-tiers.edit', $tier) }}" variant="ghost" size="sm">Edit</x-ui.button>
+                                @endcan
                         </td>
                     </tr>
                 @empty

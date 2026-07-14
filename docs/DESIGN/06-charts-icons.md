@@ -1,86 +1,202 @@
 # Charts & Icons
 
-## Chart.js Configuration
+## Chart.js Setup
 
-**Library:** Chart.js via npm or CDN.
+### npm Import + Global Defaults
+
+Chart.js is imported via npm and configured with global defaults matching the Istana design tokens.
 
 ```javascript
-// resources/js/charts.js
+// resources/js/app.js or a dedicated charts module
 import Chart from 'chart.js/auto';
 
-// Global defaults
-Chart.defaults.font.family = 'Inter, sans-serif';
+// Global defaults — match Inter font + Istana color palette
+Chart.defaults.font.family = '"Inter", ui-sans-serif, system-ui, sans-serif';
 Chart.defaults.color = '#666666';
 Chart.defaults.borderColor = '#E5E5E5';
 ```
+
+All `<x-charts.*>` components use Alpine.js `x-data` to instantiate Chart.js on `<canvas>` elements. No additional import is needed in Blade templates — Chart.js must be available globally (via bundled JS or CDN).
 
 ### Chart Color Scheme
 
 | Element | Light Mode | Dark Mode |
 |---------|-----------|-----------|
-| Primary line | `#FF6B00` | `#FF6B00` |
-| Secondary line | `#000000` | `#FFFFFF` |
-| Tertiary line | `#E5E5E5` | `#404040` |
+| Primary line/bar | `#FF6B00` (lo) | `#FF6B00` (lo) |
+| Secondary line/bar | `#000000` (dark) | `#FFFFFF` (white) |
+| Tertiary line/bar | `#E5E5E5` (gray-100) | `#404040` (dark-700) |
 | Grid lines | `#E5E5E5` | `#333333` |
-| Tooltip bg | `#000000` | `#FFFFFF` |
+| Tooltip background | `#000000` | `#FFFFFF` |
 | Tooltip text | `#FFFFFF` | `#000000` |
+| Legend text | `#666666` (gray-500) | `#999999` (gray-400) |
 
-### Chart Components
+---
+
+## x-charts.line
+
+Line chart with multiple datasets. Uses `Chart.js type: 'line'`.
 
 ```blade
-{{-- Line Chart --}}
-<x-charts.line 
+<x-charts.line
     :labels="['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min']"
     :datasets="[
-        ['label' => 'Pendapatan', 'data' => [50000, 75000, 60000, ...]],
+        ['label' => 'Pendapatan', 'data' => [50000, 75000, 60000, 80000, 70000, 90000, 45000], 'borderColor' => '#FF6B00', 'tension' => 0.3],
     ]"
+    height="h-80"
 />
+```
 
-{{-- Bar Chart --}}
-<x-charts.bar 
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `labels` | `array` | `[]` | X-axis labels (e.g. day names, dates) |
+| `datasets` | `array` | `[]` | Array of Chart.js dataset objects: `['label', 'data', 'borderColor', ...]` |
+| `height` | `string` | `h-80` | Tailwind height class for the container |
+
+**Chart.js options:** `responsive: true`, `maintainAspectRatio: false`, `legend: position: 'bottom'`, `y: { beginAtZero: true }`.
+
+---
+
+## x-charts.bar
+
+Bar chart with multiple datasets. Uses `Chart.js type: 'bar'`.
+
+```blade
+<x-charts.bar
     :labels="['Cuci Kering', 'Cuci Basah', 'Setrika', 'Dry Clean']"
     :datasets="[
-        ['label' => 'Jumlah Order', 'data' => [45, 30, 20, 5]],
+        ['label' => 'Jumlah Order', 'data' => [45, 30, 20, 5], 'backgroundColor' => '#FF6B00'],
     ]"
+    height="h-80"
 />
+```
 
-{{-- Pie/Doughnut --}}
-<x-charts.pie 
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `labels` | `array` | `[]` | X-axis category labels |
+| `datasets` | `array` | `[]` | Array of Chart.js dataset objects |
+| `height` | `string` | `h-80` | Tailwind height class |
+
+---
+
+## x-charts.pie
+
+Doughnut/pie chart with custom colors. Uses `Chart.js type: 'doughnut'`.
+
+```blade
+<x-charts.pie
     :labels="['Cash', 'Transfer', 'QRIS', 'Gateway']"
     :data="[60, 20, 15, 5]"
     :colors="['#FF6B00', '#000000', '#E5E5E5', '#10B981']"
-/>
-
-{{-- Area Chart (filled line) --}}
-<x-charts.area 
-    :labels="$dates"
-    :datasets="[
-        ['label' => 'Order', 'data' => $orderCounts],
-    ]"
+    height="h-72"
 />
 ```
 
-### Chart Sizes
+### Props
 
-| Context | Size |
-|---------|------|
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `labels` | `array` | `[]` | Segment labels |
+| `data` | `array` | `[]` | Numeric values for each segment |
+| `colors` | `array` | `['#FF6B00', '#000000', '#E5E5E5', '#10B981']` | Background colors per segment |
+| `height` | `string` | `h-72` | Tailwind height class |
+
+**Note:** This component uses a flat `data` array (not `datasets`). Colors default to the brand palette.
+
+---
+
+## x-charts.area
+
+Filled line chart (area chart). Uses `Chart.js type: 'line'` with `fill: true`. Default fill color is `rgba(255, 107, 0, 0.1)` (lo at 10% opacity). Line tension is set to `0.3` for smooth curves.
+
+```blade
+<x-charts.area
+    :labels="$dates"
+    :datasets="[
+        ['label' => 'Order', 'data' => $orderCounts, 'backgroundColor' => 'rgba(255, 107, 0, 0.1)', 'borderColor' => '#FF6B00'],
+    ]"
+    height="h-80"
+/>
+```
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `labels` | `array` | `[]` | X-axis labels |
+| `datasets` | `array` | `[]` | Array of Chart.js dataset objects; `fill` is set to `true` automatically |
+| `height` | `string` | `h-80` | Tailwind height class |
+
+---
+
+## Chart Sizes
+
+| Context | Recommended Height |
+|---------|-------------------|
 | Dashboard widget | `h-72` or `h-80` |
-| Full report | `h-96` |
-| Modal/preview | `h-48` |
+| Full report page | `h-96` |
+| Modal / preview | `h-48` |
+
+---
 
 ## Icons
 
-**Library:** Iconify with Lucide icon set (same as landing page).
+### Approach: Iconify CDN + `<x-icon>` Component
 
+Icons are rendered via the **Iconify** JavaScript library (loaded via CDN in the base layout). The `<x-icon>` component wraps Iconify's `<span class="iconify">` pattern.
+
+**CDN (in layout):**
 ```html
-{{-- Usage in Blade --}}
+<script src="https://cdn.jsdelivr.net/npm/iconify-icon@latest/dist/iconify-icon.min.js"></script>
+```
+
+### x-icon Component
+
+```blade
+{{-- resources/views/components/icon.blade.php --}}
+@props(['name' => ''])
+<span {{ $attributes->merge(['class' => 'iconify']) }} data-icon="lucide:{{ $name }}"></span>
+```
+
+**Usage:**
+
+```blade
+{{-- Basic icon — defaults to lucide set --}}
+<x-icon name="shirt" class="text-lg" />
+{{-- Renders: <span class="iconify text-lg" data-icon="lucide:shirt"></span> --}}
+
+<x-icon name="message-circle" class="text-xl text-lo" />
+<x-icon name="check-circle" class="text-lg text-success" />
+<x-icon name="x" class="text-sm" />
+
+{{-- Inline with text --}}
+<span class="flex items-center gap-2">
+    <x-icon name="user" class="text-sm" />
+    <span>Profile</span>
+</span>
+```
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `name` | `string` | `''` | Lucide icon name (e.g. `shirt`, `check-circle`) |
+
+**Attributes** are merged onto the `<span>`, so you can pass `class`, `data-icon` (override), or any other HTML attribute.
+
+### Alternative: Direct Iconify Usage
+
+```blade
 <span class="iconify text-lg" data-icon="lucide:shirt"></span>
 <span class="iconify text-xl text-lo" data-icon="lucide:message-circle"></span>
-
-{{-- Or via component --}}
-<x-icon name="shirt" class="text-lg" />
-<x-icon name="message-circle" class="text-xl text-lo" />
 ```
+
+Both approaches produce the same output. The `<x-icon>` component is a convenience wrapper.
+
+---
 
 ### Icon Catalog (Key Icons)
 
@@ -139,21 +255,3 @@ Chart.defaults.borderColor = '#E5E5E5';
 | `filter` | Filter |
 | `grid` | Grid view |
 | `list` | List view |
-
-### SVG Icon Components (Blade)
-
-For icons used frequently, create Blade SVG components:
-
-```blade
-{{-- resources/views/components/icons/shirt.blade.php --}}
-<svg {{ $attributes->merge(['class' => 'inline-block']) }} 
-     width="24" height="24" viewBox="0 0 24 24" 
-     fill="none" stroke="currentColor" stroke-width="2">
-    <path d="M6 5L3 9l3 3 ..." />
-</svg>
-```
-
-```blade
-{{-- Usage --}}
-<x-icons.shirt class="w-5 h-5 text-lo" />
-```

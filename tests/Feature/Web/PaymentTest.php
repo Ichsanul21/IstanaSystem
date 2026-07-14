@@ -31,7 +31,7 @@ class PaymentTest extends TestCase
         $order = Order::factory()->create(['branch_id' => $this->branch->id]);
 
         $this->actingAs($this->user)
-            ->get(route('admin.payments.create', $order))
+            ->get(route('admin.orders.payments.create', $order))
             ->assertOk();
     }
 
@@ -42,7 +42,7 @@ class PaymentTest extends TestCase
         ]);
 
         $this->actingAs($this->user)
-            ->post(route('admin.payments.store', $order), [
+            ->post(route('admin.orders.payments.store', $order), [
                 'amount' => 50000,
                 'payment_method' => 'cash',
             ])
@@ -59,7 +59,7 @@ class PaymentTest extends TestCase
         $order = Order::factory()->create(['branch_id' => $this->branch->id]);
 
         $this->actingAs($this->user)
-            ->post(route('admin.payments.store', $order), [
+            ->post(route('admin.orders.payments.store', $order), [
                 'amount' => 0,
                 'payment_method' => 'cash',
             ])
@@ -71,7 +71,7 @@ class PaymentTest extends TestCase
         $payment = Payment::factory()->create();
 
         $this->actingAs($this->user)
-            ->get(route('admin.payments.show', $payment))
+            ->get(route('admin.orders.payments.show', ['order' => $payment->order_id, 'payment' => $payment]))
             ->assertOk();
     }
 }

@@ -3,7 +3,9 @@
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Detail Cabang: {{ $branch->name }}</h1>
             <div class="flex items-center gap-3">
+                @can('branch.update')
                 <x-ui.button href="{{ route('admin.branches.edit', $branch) }}" variant="outline" size="sm">Edit Cabang</x-ui.button>
+                @endcan
                 <x-ui.button href="{{ route('admin.branches.index') }}" variant="ghost" size="sm">Kembali</x-ui.button>
             </div>
         </div>

@@ -14,7 +14,7 @@ return new class extends Migration
 
         $statusMap = [
             'received' => 1, 'washed' => 3, 'dried' => 4, 'ironed' => 5,
-            'packed' => 5, 'ready_for_pickup' => 7, 'picked_up' => 8, 'cancelled' => null,
+            'packed' => 6, 'ready_for_pickup' => 7, 'picked_up' => 8, 'cancelled' => null,
         ];
 
         Schema::table('order_item_status_logs', function (Blueprint $table) {

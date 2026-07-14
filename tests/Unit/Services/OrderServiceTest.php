@@ -73,7 +73,7 @@ class OrderServiceTest extends TestCase
 
         $order->refresh();
         $this->assertSame('paid', $order->payment_status);
-        $this->assertSame('processing', $order->status);
+        $this->assertSame('received', $order->status);
     }
 
     public function test_process_payment_with_partial_amount(): void

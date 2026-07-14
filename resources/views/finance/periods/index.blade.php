@@ -2,10 +2,12 @@
     <x-slot:header>
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Accounting Periods</h1>
+            @can('finance.period')
             <x-ui.button href="{{ route('admin.finance.periods.create') }}" variant="primary">
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                 Tambah Periode
             </x-ui.button>
+            @endcan
         </div>
     </x-slot:header>
 
@@ -27,12 +29,16 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                             <div class="flex items-center gap-2">
                                 @unless($period->is_closed)
+                                    @can('finance.period')
                                     <form method="POST" action="{{ route('admin.finance.periods.close', $period) }}" x-on:submit="return confirm('Tutup periode ini?')">
                                         @csrf
                                         <x-ui.button type="submit" variant="ghost" size="sm">Close</x-ui.button>
                                     </form>
+                                    @endcan
                                 @endunless
+                                @can('finance.period')
                                 <x-ui.button href="{{ route('admin.finance.periods.edit', $period) }}" variant="ghost" size="sm">Edit</x-ui.button>
+                                @endcan
                             </div>
                         </td>
                     </tr>

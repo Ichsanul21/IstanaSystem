@@ -89,10 +89,29 @@ resources/views/users/edit.blade.php
 
 ## Routes (web.php)
 
+All admin routes use the `admin.*` name prefix, nested under `auth` → `verified` → `branch` middleware.
+
 ```php
-Route::middleware(['auth'])->group(function () {
-    Route::resource('users', UserController::class);
-    Route::get('profile', [ProfileController::class, 'edit']);
-    Route::put('profile', [ProfileController::class, 'update']);
+Route::middleware(['auth', 'verified'])->name('admin.')->group(function () {
+    Route::middleware(['branch'])->group(function () {
+        // Users (resource CRUD)
+        Route::resource('users', UserController::class)
+            ->middleware('permission:user.read|user.create|user.update|user.delete');
+    });
 });
 ```
+
+**Route names:**
+| Method | Path | Name | Middleware |
+|--------|------|------|-----------|
+| GET | `/admin/users` | `admin.users.index` | `permission:user.read\|user.create\|user.update\|user.delete` |
+| GET | `/admin/users/create` | `admin.users.create` | (same) |
+| POST | `/admin/users` | `admin.users.store` | (same) |
+| GET | `/admin/users/{user}` | `admin.users.show` | (same) |
+| GET | `/admin/users/{user}/edit` | `admin.users.edit` | (same) |
+| PUT | `/admin/users/{user}` | `admin.users.update` | (same) |
+| DELETE | `/admin/users/{user}` | `admin.users.destroy` | (same) |
+
+**Profile routes** (managed via Breeze `auth.php`):
+- `GET /profile` → Breeze `ProfileController@edit`
+- `PUT /profile` → Breeze `ProfileController@update`

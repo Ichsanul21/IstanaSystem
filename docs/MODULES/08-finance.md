@@ -154,7 +154,48 @@ FINANCE → Dashboard
 
 ## Routes
 
-Finance routes are under the `admin.*` name prefix with `auth`, `verified`, and `branch` middleware. There are 30+ routes covering dashboard, journal, COA, accounting periods, expenses, tax, and reports (trial balance, income statement).
+All finance routes use the `admin.finance.*` name prefix, nested under `auth` → `verified` → `branch` middleware, with the group middleware `permission:finance.read|create_manual_journal|manage_accounting_periods|manage_expenses`.
+
+**Dashboard & Overview:**
+| Action | Name | Permission |
+|--------|------|-----------|
+| Finance dashboard | `admin.finance.index` | `finance.read\|create_manual_journal\|manage_accounting_periods\|manage_expenses` |
+| COA overview | `admin.finance.accounts` | (same) |
+| Journal list | `admin.finance.journal` | (same) |
+| Create journal form | `admin.finance.journal.create` | (same) |
+| Store journal | `admin.finance.journal.store` | (same) |
+| Trial balance | `admin.finance.trial-balance` | (same) |
+| Income statement | `admin.finance.income-statement` | (same) |
+
+**Chart of Accounts (CRUD):**
+| Action | Name |
+|--------|------|
+| Create form | `admin.finance.coa.create` |
+| Store | `admin.finance.coa.store` |
+| Edit form | `admin.finance.coa.edit` |
+| Update | `admin.finance.coa.update` |
+| Delete | `admin.finance.coa.destroy` |
+
+**Accounting Periods (CRUD):**
+| Action | Name |
+|--------|------|
+| List | `admin.finance.periods.index` |
+| Create form | `admin.finance.periods.create` |
+| Store | `admin.finance.periods.store` |
+| Edit form | `admin.finance.periods.edit` |
+| Update | `admin.finance.periods.update` |
+| Delete | `admin.finance.periods.destroy` |
+| Close period | `admin.finance.periods.close` |
+
+**Expenses (CRUD):**
+| Action | Name |
+|--------|------|
+| List | `admin.finance.expenses.index` |
+| Create form | `admin.finance.expenses.create` |
+| Store | `admin.finance.expenses.store` |
+| Edit form | `admin.finance.expenses.edit` |
+| Update | `admin.finance.expenses.update` |
+| Delete | `admin.finance.expenses.destroy` |
 
 ## Files
 
@@ -181,9 +222,11 @@ database/migrations/create_expenses_table.php
 database/migrations/create_tax_configurations_table.php
 database/migrations/create_tax_logs_table.php
 database/seeders/ChartOfAccountSeeder.php
+resources/views/finance/index.blade.php
+resources/views/finance/accounts.blade.php
 resources/views/finance/dashboard.blade.php
 resources/views/finance/journal/index.blade.php
-resources/views/finance/journal/create-journal.blade.php
+resources/views/finance/journal/create.blade.php
 resources/views/finance/reports/trial-balance.blade.php
 resources/views/finance/reports/income-statement.blade.php
 resources/views/finance/coa/index.blade.php

@@ -38,7 +38,7 @@
             <x-slot:header>
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Form Pembayaran</h2>
             </x-slot:header>
-            <form method="POST" action="{{ route('admin.payments.store', $order->id ?? $order['id']) }}" class="space-y-4">
+            <form method="POST" action="{{ route('admin.orders.payments.store', $order->id ?? $order['id']) }}" class="space-y-4">
                 @csrf
                 <input type="hidden" name="order_id" value="{{ $order->id ?? $order['id'] }}">
                 <x-ui.input type="number" name="amount" label="Jumlah Dibayar" :value="old('amount', ($order->grand_total ?? 0) - ($order->paid_amount ?? 0))" required />

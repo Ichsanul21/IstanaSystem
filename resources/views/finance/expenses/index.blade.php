@@ -2,10 +2,12 @@
     <x-slot:header>
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Expenses</h1>
+            @can('finance.expense')
             <x-ui.button href="{{ route('admin.finance.expenses.create') }}" variant="primary">
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                 Tambah Expense
             </x-ui.button>
+            @endcan
         </div>
     </x-slot:header>
 
@@ -40,11 +42,13 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $expense->reference ?? '-' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                             <div class="flex items-center gap-2">
+                                @can('finance.expense')
                                 <x-ui.button href="{{ route('admin.finance.expenses.edit', $expense) }}" variant="ghost" size="sm">Edit</x-ui.button>
                                 <form method="POST" action="{{ route('admin.finance.expenses.destroy', $expense) }}" x-on:submit="return confirm('Hapus expense ini?')">
                                     @csrf @method('DELETE')
                                     <x-ui.button type="submit" variant="ghost" size="sm">Hapus</x-ui.button>
                                 </form>
+                                @endcan
                             </div>
                         </td>
                     </tr>

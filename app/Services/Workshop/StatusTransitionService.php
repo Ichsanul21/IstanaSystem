@@ -85,11 +85,11 @@ class StatusTransitionService
 
         if ($allTerminal) {
             $order->update([
-                'status' => OrderStatus::Completed->value,
+                'status' => OrderStatus::ReadyForPickup->value,
                 'finished_at' => $order->finished_at ?? now(),
             ]);
         } elseif ($anyProcessing) {
-            $order->update(['status' => OrderStatus::Processing->value]);
+            $order->update(['status' => OrderStatus::Received->value]);
         }
     }
 }
