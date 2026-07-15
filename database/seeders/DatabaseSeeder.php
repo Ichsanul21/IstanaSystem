@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
             ServiceSeeder::class,
             ProductionStatusSeeder::class,
             ChartOfAccountSeeder::class,
-            // SampleDataSeeder::class,
+            SampleDataSeeder::class,
         ]);
     }
 }

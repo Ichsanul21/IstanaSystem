@@ -92,12 +92,12 @@ class SampleDataSeeder extends Seeder
 
         Customer::firstOrCreate(
             ['code' => 'CUST001'],
-            ['name' => 'Budi', 'phone' => '081234567890', 'email' => 'budi@email.com', 'address' => 'Jl. Budi No. 1', 'membership_tier_id' => $bronze?->id, 'total_points' => 0, 'lifetime_spending' => 0, 'branch_id' => $branchMargonda->id, 'is_active' => true]
+            ['name' => 'Budi', 'phone' => '081234567890', 'email' => 'budi@email.com', 'address' => 'Jl. Budi No. 1', 'membership_tier_id' => $bronze?->id, 'total_points' => 0, 'total_purchase' => 0, 'branch_id' => $branchMargonda->id, 'is_active' => true]
         );
 
         Customer::firstOrCreate(
             ['code' => 'CUST002'],
-            ['name' => 'Siti', 'phone' => '081234567891', 'email' => 'siti@email.com', 'address' => 'Jl. Siti No. 2', 'membership_tier_id' => $bronze?->id, 'total_points' => 0, 'lifetime_spending' => 0, 'branch_id' => $branchDepok->id, 'is_active' => true]
+            ['name' => 'Siti', 'phone' => '081234567891', 'email' => 'siti@email.com', 'address' => 'Jl. Siti No. 2', 'membership_tier_id' => $bronze?->id, 'total_points' => 0, 'total_purchase' => 0, 'branch_id' => $branchDepok->id, 'is_active' => true]
         );
 
         $coas = [
