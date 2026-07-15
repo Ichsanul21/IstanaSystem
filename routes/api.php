@@ -18,14 +18,14 @@ Route::middleware(['auth:sanctum', 'auth.sync'])->get('/customers/search', [Cust
 
 Route::prefix('v1')->group(function () {
     // Public
-    Route::get('/track/{token}', [TrackingApiController::class, 'status'])->middleware('throttle:tracking');
-    Route::post('/track/{token}/verify', [TrackingApiController::class, 'verify'])->middleware('throttle:tracking');
+    Route::get('/track/{token}', [TrackingApiController::class, 'status'])->middleware(['branch.header', 'throttle:tracking']);
+    Route::post('/track/{token}/verify', [TrackingApiController::class, 'verify'])->middleware(['branch.header', 'throttle:tracking']);
 
     // Auth (no sanctum required for login)
     Route::post('/auth/login', [AuthApiController::class, 'login']);
 
     // Authenticated
-    Route::middleware(['auth:sanctum', 'auth.sync', 'throttle:api'])->group(function () {
+    Route::middleware(['auth:sanctum', 'auth.sync', 'branch.header', 'throttle:api'])->group(function () {
         // Auth
         Route::post('/auth/logout', [AuthApiController::class, 'logout']);
         Route::get('/auth/me', [AuthApiController::class, 'me']);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Enums\OrderStatus;
+use App\Enums\ProductionStatus;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
@@ -10,14 +11,43 @@ use Illuminate\Http\Request;
 
 class OrderApiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::forCurrentBranch()
-            ->with('customer:id,name', 'items')
-            ->latest()
-            ->paginate(15);
+        $query = Order::forCurrentBranch()
+            ->with('customer:id,name', 'items');
 
-        return ApiResponse::paginate($orders);
+        if ($search = $request->search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('order_number', 'like', "%{$search}%")
+                  ->orWhere('customer_name', 'like', "%{$search}%");
+            });
+        }
+
+        if ($status = $request->status) {
+            $query->where('status', $status);
+        }
+
+        if ($paymentStatus = $request->payment_status) {
+            $query->where('payment_status', $paymentStatus);
+        }
+
+        if ($dateFrom = $request->date_from) {
+            $query->whereDate('created_at', '>=', $dateFrom);
+        }
+
+        if ($dateTo = $request->date_to) {
+            $query->whereDate('created_at', '<=', $dateTo);
+        }
+
+        if ($customerId = $request->customer_id) {
+            $query->where('customer_id', $customerId);
+        }
+
+        if ($branchId = $request->branch_id) {
+            $query->where('branch_id', $branchId);
+        }
+
+        return ApiResponse::paginate($query->latest()->paginate($request->per_page ?? 15));
     }
 
     public function show(Order $order)
@@ -86,7 +116,7 @@ class OrderApiController extends Controller
         $refundService = app(\App\Services\Order\RefundService::class);
         $refund = $refundService->processRefund($order, $data);
 
-        return ApiResponse::success(['id' => $refund->id, 'status' => $refund->status], null, 201);
+        return ApiResponse::success(['refund_id' => $refund->id, 'amount' => (float) $data['amount'], 'status' => $refund->status], null, 200);
     }
 
     public function receipt($id)
@@ -108,12 +138,29 @@ class OrderApiController extends Controller
             'total' => (float) $order->grand_total,
             'created_at' => $order->created_at,
             'branch' => $order->branch?->name ?? '',
+            'pdf_url' => url("storage/receipts/{$order->order_number}.pdf"),
         ]);
     }
 
     public function trackingStatus($id)
     {
         $order = Order::with(['items.statusLogs.productionStatus', 'customer', 'branch'])->findOrFail($id);
+
+        $allStatusLogs = $order->items->flatMap->statusLogs->sortBy('created_at');
+        $productionStatuses = ProductionStatus::cases();
+
+        $timeline = collect($productionStatuses)->map(fn($status) => [
+            'code' => $status->value,
+            'name' => $status->label(),
+            'sequence' => $status->sequence(),
+            'completed' => $allStatusLogs->contains(fn($log) => $log->productionStatus?->code === $status->value),
+            'completed_at' => $allStatusLogs->where(fn($log) => $log->productionStatus?->code === $status->value)->first()?->created_at?->format('d/m/Y H:i'),
+        ]);
+
+        $currentStatus = $order->items
+            ->flatMap->statusLogs
+            ->sortByDesc('created_at')
+            ->first()?->productionStatus?->value ?? 'TERIMA';
 
         $items = $order->items->map(function ($item) {
             $latestLog = $item->statusLogs->first();
@@ -128,8 +175,12 @@ class OrderApiController extends Controller
         return ApiResponse::success([
             'order_number' => $order->order_number,
             'customer_name' => $order->customer?->name ?? $order->customer_name,
-            'status' => $order->status,
+            'current_status' => $currentStatus,
+            'payment_status' => $order->payment_status,
+            'grand_total' => (float) $order->grand_total,
+            'timeline' => $timeline,
             'items' => $items,
+            'branch' => $order->branch ? ['id' => $order->branch->id, 'name' => $order->branch->name] : null,
         ]);
     }
 

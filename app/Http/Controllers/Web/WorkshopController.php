@@ -66,6 +66,22 @@ class WorkshopController extends Controller
         return view('workshop.order-detail', compact('order', 'orderItem'));
     }
 
+    public function lookup(Request $request)
+    {
+        $request->validate(['token' => 'required|string']);
+
+        $orderItem = OrderItem::whereHas('order', function ($q) use ($request) {
+            $q->where('qr_token', $request->token)
+                ->orWhere('order_number', $request->token);
+        })->with(['order.customer', 'statusLogs.productionStatus'])->first();
+
+        if (!$orderItem) {
+            return back()->with('error', 'Item dengan token tersebut tidak ditemukan.');
+        }
+
+        return redirect()->route('admin.workshop.items.show', $orderItem);
+    }
+
     public function updateStatus(OrderItem $orderItem, Request $request)
     {
         $request->validate([

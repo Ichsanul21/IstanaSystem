@@ -9,11 +9,13 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderItemStatusLog;
 use App\Models\ProductionStatus as ProductionStatusModel;
+use App\Services\Order\OrderInventoryService;
 
 class StatusTransitionService
 {
     public function __construct(
-        protected WorkshopService $workshopService
+        protected WorkshopService $workshopService,
+        protected OrderInventoryService $orderInventoryService
     ) {}
 
     public function validateTransition(OrderItem $item, string $toStatus): bool
@@ -60,6 +62,10 @@ class StatusTransitionService
         ]);
 
         $this->updateOrderStatus($item->order);
+
+        if ($targetStatus === ProductionStatus::Cuci) {
+            $this->orderInventoryService->consumeInventory($item->order);
+        }
 
         return $targetStatus;
     }

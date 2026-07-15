@@ -101,12 +101,10 @@ class SampleDataSeeder extends Seeder
         );
 
         $coas = [
-            ['code' => '1-1000', 'name' => 'Kas', 'type' => 'asset'],
-            ['code' => '1-1100', 'name' => 'Piutang Usaha', 'type' => 'asset'],
-            ['code' => '1-2000', 'name' => 'Inventory Asset', 'type' => 'asset'],
-            ['code' => '4-1000', 'name' => 'Pendapatan Jasa', 'type' => 'revenue'],
-            ['code' => '5-1000', 'name' => 'Beban Operasional', 'type' => 'expense'],
-            ['code' => '5-2000', 'name' => 'Beban Inventory', 'type' => 'expense'],
+            ['code' => '1-1000', 'name' => 'Kas', 'category' => 'asset', 'normal_balance' => 'debit'],
+            ['code' => '1-1100', 'name' => 'Piutang Usaha', 'category' => 'asset', 'normal_balance' => 'debit'],
+            ['code' => '4-1000', 'name' => 'Pendapatan Jasa', 'category' => 'revenue', 'normal_balance' => 'credit'],
+            ['code' => '5-1000', 'name' => 'Beban Operasional', 'category' => 'expense', 'normal_balance' => 'debit'],
         ];
 
         foreach ($coas as $c) {

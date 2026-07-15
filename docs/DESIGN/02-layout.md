@@ -38,31 +38,29 @@ SIDEBAR
 ├── LOGO (full when expanded, icon-only when collapsed)
 │
 ├── MAIN MENU
-│   ├── Dashboard ─┬─ Ecommerce
-│   │               ├─ Analytics
-│   │               ├─ CRM
-│   │               └─ ... (dashboards per role)
-│   ├── E-Commerce ─┬─ Products
-│   │               ├─ Orders
-│   │               ├─ Transactions
-│   │               └─ Invoices
-│   ├── CRM ────────── Customers, Tiers, Points
-│   ├── Workshop ───── Production, Queue, Scan
-│   ├── Finance ────── Journal, COA, Tax, Expenses
-│   ├── Inventory ──── Items, Stock, Batches
-│   ├── Promotions ─── List, Create
-│   ├── Reports ────── Per role dashboards
-│   └── Settings ───── General, Branch, Tax, etc.
-│
-├── SUPPORT MENU
-│   ├── Chat
-│   ├── Inbox
+│   ├── Dashboard
+│   ├── POS
+│   ├── Orders
+│   ├── Workshop / Produksi ─┬─ Queue
+│   │                         ├─ Scan QR
+│   │                         └─ Stats
+│   ├── Customers / CRM ──────┬─ Daftar Pelanggan
+│   │                          ├─ Membership Tiers
+│   │                          └─ Loyalty Points
+│   ├── Promotions
+│   ├── Inventory ────────────┬─ Items
+│   │                          ├─ Stock
+│   │                          └─ Batches
+│   ├── Finance ──────────────┬─ Dashboard
+│   │                          ├─ Journal
+│   │                          ├─ Chart of Accounts
+│   │                          ├─ Pajak
+│   │                          └─ Pengeluaran
+│   ├── Reports ──────────────┬─ Pendapatan
+│   │                          └─ Orders
+│   ├── Settings
+│   ├── Users
 │   └── Activity Logs
-│
-├── OTHERS
-│   ├── Charts
-│   ├── UI Elements
-│   └── Authentication (Sign In page)
 │
 └── SIDEBAR WIDGET (promo / version info)
 ```
@@ -72,16 +70,21 @@ SIDEBAR
 ```javascript
 // Sidebar Store — replicated from TailAdmin's SidebarContext
 Alpine.store('sidebar', {
-    isExpanded: true,
-    isMobileOpen: false,
-    isHovered: false,
+    collapsed: false,
+    mobileOpen: false,
     activeItem: null,
     openSubmenus: [],
-    
-    toggle() { /* toggle isExpanded */ },
-    toggleMobile() { /* toggle isMobileOpen */ },
-    setHover(val) { /* set isHovered */ },
-    toggleSubmenu(name) { /* accordion toggle */ },
+
+    toggle() { this.collapsed = !this.collapsed },
+    toggleMobile() { this.mobileOpen = !this.mobileOpen },
+    closeMobile() { this.mobileOpen = false },
+    toggleSubmenu(name) {
+        if (this.openSubmenus.includes(name)) {
+            this.openSubmenus = this.openSubmenus.filter(n => n !== name);
+        } else {
+            this.openSubmenus = [...this.openSubmenus, name];
+        }
+    },
     isActive(path) { /* highlight current route */ },
 })
 ```
@@ -92,11 +95,11 @@ Alpine.store('sidebar', {
 |---------|-------------|
 | **Hamburger** | Toggle sidebar (desktop) / mobile sidebar (mobile) |
 | **Logo** | Mobile-only logo display |
-| **App Menu** | Three dots toggle for mobile |
 | **Search** | `Ctrl+K` / `Cmd+K` shortcut, visible on `xl:` |
 | **Notifications** | Bell icon dropdown — order updates, low stock alerts |
 | **User Menu** | Avatar + name dropdown — profile, settings, logout |
 | **Theme Toggle** | Sun/moon icon — light/dark switch |
+| **Branch Selector** | `<select>` dropdown — switches active branch via `admin.branch.switch` |
 
 ## Content Area
 

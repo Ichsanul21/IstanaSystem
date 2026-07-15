@@ -44,8 +44,9 @@ class PaymentApiController extends Controller
         $redirectUrl = 'https://app.midtrans.com/snap/v2/vtweb/' . $snapToken;
 
         try {
-            \Midtrans\Config::$serverKey = config('services.midtrans.server_key');
-            \Midtrans\Config::$isProduction = config('services.midtrans.is_production', false);
+            $midtransConfig = \App\Services\Payment\MidtransService::resolveConfig();
+            \Midtrans\Config::$serverKey = $midtransConfig['server_key'];
+            \Midtrans\Config::$isProduction = $midtransConfig['is_production'];
             \Midtrans\Config::$isSanitized = true;
             \Midtrans\Config::$is3ds = true;
 

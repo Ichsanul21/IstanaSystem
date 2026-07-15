@@ -11,7 +11,7 @@
             <form method="POST" action="{{ route('admin.inventory.stock.store') }}" class="space-y-4">
                 @csrf
 
-                <x-ui.select name="inventory_item_id" label="Item" :options="$items->map(fn($i) => ['value' => $i->id, 'label' => $i->name])->toArray()" required />
+                <x-ui.select name="inventory_item_id" label="Item" :options="$items->pluck('name', 'id')->toArray()" required />
 
                 <x-ui.input name="quantity" label="Jumlah" type="number" step="0.01" min="0" required />
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\ProductionStatus;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
@@ -41,17 +42,20 @@ class TrackingApiController extends Controller
 
     private function formatOrder(Order $order): array
     {
-        $statuses = ['received', 'washed', 'dried', 'ironed', 'packed', 'ready_for_pickup', 'picked_up'];
         $allStatusLogs = $order->items->flatMap->statusLogs->sortBy('created_at');
 
-        $timeline = collect($statuses)->map(fn($code) => [
-            'status' => $code,
-            'completed' => $allStatusLogs->contains(fn($log) => $log->productionStatus?->code === $code),
-            'completed_at' => $allStatusLogs->where(fn($log) => $log->productionStatus?->code === $code)->first()?->created_at?->format('d/m/Y H:i'),
+        $timeline = collect(ProductionStatus::cases())->map(fn($status) => [
+            'code' => $status->value,
+            'name' => $status->label(),
+            'sequence' => $status->sequence(),
+            'completed' => $allStatusLogs->contains(fn($log) => $log->productionStatus?->code === $status->value),
+            'completed_at' => $allStatusLogs->where(fn($log) => $log->productionStatus?->code === $status->value)->first()?->created_at?->format('d/m/Y H:i'),
         ]);
 
-        $currentStep = $timeline->search(fn($s) => !$s['completed']);
-        $currentStep = $currentStep === false ? count($statuses) : $currentStep;
+        $currentStatus = $order->items
+            ->flatMap->statusLogs
+            ->sortByDesc('created_at')
+            ->first()?->productionStatus?->value ?? 'TERIMA';
 
         $items = $order->items->map(fn($item) => [
             'service_name' => $item->servicePricing?->service?->name ?? '-',
@@ -60,18 +64,16 @@ class TrackingApiController extends Controller
         ]);
 
         return [
-            'id' => $order->id,
             'order_number' => $order->order_number,
             'customer_name' => $order->customer?->name ?? '-',
-            'qr_token' => $order->qr_token,
+            'current_status' => $currentStatus,
+            'payment_status' => $order->payment_status,
+            'grand_total' => (float) $order->grand_total,
             'created_at' => $order->created_at->format('d/m/Y H:i'),
-            'status' => $order->status,
-            'branch' => $order->branch?->name,
+            'estimated_finish' => $order->estimated_finish?->format('d/m/Y H:i'),
+            'branch' => $order->branch ? ['id' => $order->branch->id, 'name' => $order->branch->name] : null,
             'timeline' => $timeline,
             'items' => $items,
-            'current_step' => $currentStep,
-            'total_steps' => count($statuses),
-            'estimated_finish' => $order->estimated_finish?->format('d/m/Y H:i'),
         ];
     }
 }

@@ -10,11 +10,11 @@
         <x-ui.table>
             <thead>
                 <tr>
-                    <x-ui.th>Item</x-ui.th>
-                    <x-ui.th>Jumlah</x-ui.th>
-                    <x-ui.th>Harga Satuan</x-ui.th>
-                    <x-ui.th>Batch</x-ui.th>
-                    <x-ui.th>Tanggal</x-ui.th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Item</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Jumlah</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Harga Satuan</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Batch</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Tanggal</th>
                 </tr>
             </thead>
             <tbody>

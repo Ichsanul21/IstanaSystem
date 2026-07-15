@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class FinanceService
 {
-    public function createJournalEntry(string $description, array $lines, ?int $branchId = null): JournalEntry
+    public function createJournalEntry(string $description, array $lines, ?int $branchId = null, ?string $type = null, ?string $referenceType = null, ?int $referenceId = null): JournalEntry
     {
         $totalDebit = 0;
         $totalCredit = 0;
@@ -26,7 +26,7 @@ class FinanceService
             throw new \InvalidArgumentException('Debit and credit totals must be equal.');
         }
 
-        return DB::transaction(function () use ($description, $lines, $branchId) {
+        return DB::transaction(function () use ($description, $lines, $branchId, $type, $referenceType, $referenceId) {
             $entryNumber = $this->generateEntryNumber();
 
             $period = AccountingPeriod::where('start_date', '<=', now())
@@ -41,6 +41,9 @@ class FinanceService
                 'branch_id' => $branchId,
                 'created_by' => Auth::id(),
                 'entry_date' => now(),
+                'type' => $type ?? 'manual',
+                'reference_type' => $referenceType,
+                'reference_id' => $referenceId,
             ]);
 
             foreach ($lines as $line) {

@@ -6,7 +6,7 @@
                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Pengaturan khusus untuk setiap cabang</p>
             </div>
             <div class="flex items-center gap-3">
-                <select x-on:change="window.location.href = '{{ route('admin.settings.branch', ['branch' => '']) }}/' + $event.target.value" class="block w-44 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm px-3 py-2 text-sm">
+                <select x-on:change="window.location.href = '/admin/settings/branches/' + $event.target.value" class="block w-44 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm px-3 py-2 text-sm">
                     @foreach($branches as $b)
                         <option value="{{ $b->id }}" @selected($b->id === $branch->id)>{{ $b->name }}</option>
                     @endforeach
@@ -16,7 +16,7 @@
         </div>
     </x-slot:header>
 
-    <form id="branch-settings-form" method="POST" action="{{ route('admin.settings.branch.update', $branch) }}" class="space-y-6">
+    <form id="branch-settings-form" method="POST" action="{{ route('admin.branch-settings.update', $branch) }}" class="space-y-6">
         @csrf
 
         <x-ui.card>

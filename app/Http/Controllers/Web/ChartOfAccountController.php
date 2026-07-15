@@ -25,7 +25,7 @@ class ChartOfAccountController extends Controller
         $data = $request->validate([
             'code' => 'required|string|max:20|unique:chart_of_accounts,code',
             'name' => 'required|string|max:255',
-            'type' => 'required|string|in:asset,liability,equity,revenue,expense',
+            'category' => 'required|string|in:asset,liability,equity,revenue,expense',
             'is_active' => 'boolean',
         ]);
 
@@ -44,7 +44,7 @@ class ChartOfAccountController extends Controller
         $data = $request->validate([
             'code' => 'required|string|max:20|unique:chart_of_accounts,code,' . $chartOfAccount->id,
             'name' => 'required|string|max:255',
-            'type' => 'required|string|in:asset,liability,equity,revenue,expense',
+            'category' => 'required|string|in:asset,liability,equity,revenue,expense',
             'is_active' => 'boolean',
         ]);
 

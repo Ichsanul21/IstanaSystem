@@ -17,7 +17,7 @@
                     @csrf @method('PUT')
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <x-ui.select name="category" label="Kategori" :options="$categories ?? []" placeholder="Pilih Kategori" required :value="old('category', $expense->category)" />
-                        <x-ui.input name="expense_date" label="Tanggal" type="date" required :value="old('expense_date', $expense->expense_date->format('Y-m-d'))" />
+                        <x-ui.input name="posted_at" label="Tanggal" type="date" required :value="old('posted_at', $expense->posted_at->format('Y-m-d'))" />
                     </div>
                     <x-ui.textarea name="description" label="Deskripsi" rows="3" required>{{ old('description', $expense->description) }}</x-ui.textarea>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

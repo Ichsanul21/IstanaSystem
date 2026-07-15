@@ -27,7 +27,7 @@
                 'class' => 'block w-full rounded-lg border bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm transition-colors px-4 py-2.5 ' . (
                     $resolvedError
                     ? 'border-red-300 dark:border-red-600 focus:border-red-500 focus:ring-red-500'
-                    : 'border-gray-300 dark:border-gray-600 focus:border-primary focus:ring-primary'
+                    : 'border-lo-gray dark:border-dark-700 focus:border-lo focus:ring-lo'
                 ) . ' disabled:bg-gray-50 dark:disabled:bg-gray-900 disabled:text-gray-500',
                 'aria-invalid' => $resolvedError ? 'true' : 'false',
                 'aria-describedby' => $resolvedError ? $name . '-error' : null,

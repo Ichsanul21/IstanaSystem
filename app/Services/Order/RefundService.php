@@ -33,7 +33,7 @@ class RefundService
             ]);
 
             $order = $refund->order;
-            $order->decrement('total', $refund->amount);
+            $order->decrement('grand_total', $refund->amount);
 
             $totalRefunded = $order->refunds()->where('status', 'approved')->sum('amount');
             $totalPaid = $order->payments()->sum('amount');

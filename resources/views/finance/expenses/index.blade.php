@@ -34,7 +34,7 @@
             <x-ui.table :headers="['Tanggal', 'Kategori', 'Deskripsi', 'Jumlah', 'Metode', 'Referensi', 'Aksi']">
                 @forelse($expenses as $expense)
                     <tr class="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $expense->expense_date->format('d/m/Y') }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $expense->posted_at->format('d/m/Y') }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ $expense->category }}</td>
                         <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 max-w-xs truncate">{{ $expense->description }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">Rp {{ number_format($expense->amount, 0, ',', '.') }}</td>

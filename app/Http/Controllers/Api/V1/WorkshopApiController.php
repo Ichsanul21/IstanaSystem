@@ -82,9 +82,20 @@ class WorkshopApiController extends Controller
 
     public function queue(Request $request)
     {
-        $queue = $this->workshopService->getWorkshopQueue(currentBranchId());
+        $items = $this->workshopService->getWorkshopQueue(currentBranchId());
 
-        return ApiResponse::success($queue->map(fn($item) => [
+        if ($status = $request->status) {
+            $items = $items->filter(fn($item) => $item->statusLogs->first()?->productionStatus?->code === $status);
+        }
+
+        if ($search = $request->search) {
+            $items = $items->filter(fn($item) =>
+                str_contains($item->order?->order_number ?? '', $search) ||
+                str_contains($item->order?->customer?->name ?? $item->order?->customer_name ?? '', $search)
+            );
+        }
+
+        return ApiResponse::success($items->values()->map(fn($item) => [
             'order_number' => $item->order?->order_number ?? '',
             'item' => (string) ($item->service?->name ?? '') . ' - ' . $item->quantity . ' kg',
             'current_status' => $item->statusLogs->first()?->productionStatus?->code ?? 'TERIMA',
@@ -97,7 +108,7 @@ class WorkshopApiController extends Controller
     {
         $branchId = currentBranchId();
 
-        $statusCodes = ['TERIMA', 'CUCI', 'KERING', 'LIPAT', 'CEK', 'SIAP'];
+        $statusCodes = ['TERIMA', 'PILAH', 'CUCI', 'KERING', 'LIPAT', 'CEK', 'SIAP'];
         $statusCounts = [];
         foreach ($statusCodes as $code) {
             $statusCounts[$code] = OrderItem::whereHas('statusLogs.productionStatus', fn($q) => $q->where('code', $code))->count();

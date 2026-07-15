@@ -38,7 +38,7 @@ class TrackingService
             $q->latest()->take(1);
         }]);
 
-        $totalStatuses = 7;
+        $totalStatuses = 8;
         $items = $order->items;
         $completedStatuses = 0;
 
@@ -46,7 +46,7 @@ class TrackingService
             $latestStatus = $item->statusLogs->first();
             if ($latestStatus && $latestStatus->productionStatus) {
                 $statusIndex = array_search($latestStatus->productionStatus->code, [
-                    'TERIMA', 'CUCI', 'KERING', 'LIPAT', 'CEK', 'SIAP', 'DIAMBIL'
+                    'TERIMA', 'PILAH', 'CUCI', 'KERING', 'LIPAT', 'CEK', 'SIAP', 'DIAMBIL'
                 ]);
                 $completedStatuses += $statusIndex !== false ? min($statusIndex + 1, $totalStatuses) : 0;
             }

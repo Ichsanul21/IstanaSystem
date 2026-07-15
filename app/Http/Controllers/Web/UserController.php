@@ -7,6 +7,7 @@ use App\Http\Requests\UserRequest;
 use App\Models\Branch;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
@@ -38,6 +39,16 @@ class UserController extends Controller
 
     public function store(UserRequest $request)
     {
+        $authUser = auth()->user();
+
+        if (!$authUser->can('assign_roles')) {
+            $assignableRoles = ['CS', 'Cashier', 'Workshop Staff'];
+            $requestedRole = Role::findByName($request->role);
+            if ($requestedRole && !in_array($requestedRole->name, $assignableRoles)) {
+                return back()->withErrors(['role' => 'Anda tidak memiliki izin untuk memberikan role tersebut'])->withInput();
+            }
+        }
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,

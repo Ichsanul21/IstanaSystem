@@ -76,4 +76,22 @@ class MidtransService implements PaymentGatewayInterface
     {
         return GatewayConfiguration::where('is_active', true)->first();
     }
+
+    public static function resolveConfig(): array
+    {
+        $db = GatewayConfiguration::where('is_active', true)->first();
+        if ($db) {
+            return [
+                'server_key' => $db->server_key,
+                'client_key' => $db->client_key,
+                'is_production' => $db->is_production,
+            ];
+        }
+
+        return [
+            'server_key' => config('services.midtrans.server_key'),
+            'client_key' => config('services.midtrans.client_key'),
+            'is_production' => config('services.midtrans.is_production', false),
+        ];
+    }
 }

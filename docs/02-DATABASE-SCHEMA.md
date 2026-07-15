@@ -2,7 +2,7 @@
 
 ## Overview
 
-**Total Tables:** 30+
+**Total Tables:** 46 (38 app + 8 framework)
 **Engine:** InnoDB (MySQL) / PostgreSQL
 **Charset:** utf8mb4 (MySQL) / UTF-8 (PostgreSQL)
 
@@ -87,15 +87,40 @@ Global (cross-branch):
 | last_login_at | TIMESTAMP NULL | |
 | timestamps + soft_deletes | | |
 
-### 4. `model_has_roles` (Spatie)
+### 4. `roles` (Spatie)
 
-Spatie Permission pivot.
+| Column | Type | Notes |
+|--------|------|-------|
+| id | BIGINT PK AI | |
+| name | VARCHAR(255) UNIQUE | Developer, Super Admin, Owner, Branch Admin, Workshop Admin, CS, Cashier, Workshop Staff |
+| guard_name | VARCHAR(255) | web |
+| display_name | VARCHAR(255) NULL | |
+| description | VARCHAR(255) NULL | |
+| is_protected | BOOLEAN | DEFAULT FALSE |
+| timestamps | | |
 
-### 5. `model_has_permissions` (Spatie)
+### 5. `permissions` (Spatie)
 
-Spatie Permission pivot.
+| Column | Type | Notes |
+|--------|------|-------|
+| id | BIGINT PK AI | |
+| name | VARCHAR(255) UNIQUE | 59 dot-notation names |
+| guard_name | VARCHAR(255) | web |
+| timestamps | | |
 
-### 6. `customers`
+### 6. `role_has_permissions` (Spatie)
+
+Spatie Permission pivot: role_id + permission_id.
+
+### 7. `model_has_roles` (Spatie)
+
+Spatie Permission pivot: model_id + role_id.
+
+### 8. `model_has_permissions` (Spatie)
+
+Spatie Permission pivot: model_id + permission_id.
+
+### 9. `customers`
 
 | Column | Type | Notes |
 |--------|------|-------|
@@ -121,7 +146,7 @@ Spatie Permission pivot.
 | is_active | BOOLEAN | DEFAULT TRUE |
 | timestamps + soft_deletes | | |
 
-### 7. `membership_tiers`
+### 10. `membership_tiers`
 
 | Column | Type | Notes |
 |--------|------|-------|
@@ -139,7 +164,7 @@ Spatie Permission pivot.
 | is_active | BOOLEAN | DEFAULT TRUE |
 | timestamps | | |
 
-### 8. `loyalty_points_transactions`
+### 11. `loyalty_points_transactions`
 
 | Column | Type | Notes |
 |--------|------|-------|
@@ -155,7 +180,7 @@ Spatie Permission pivot.
 | created_by | BIGINT FK → users(id) | NULL |
 | timestamps | | |
 
-### 9. `services`
+### 12. `services`
 
 | Column | Type | Notes |
 |--------|------|-------|
@@ -167,7 +192,7 @@ Spatie Permission pivot.
 | is_active | BOOLEAN | DEFAULT TRUE |
 | timestamps + soft_deletes | | |
 
-### 10. `service_pricings`
+### 13. `service_pricings`
 
 | Column | Type | Notes |
 |--------|------|-------|
@@ -182,7 +207,7 @@ Spatie Permission pivot.
 | UNIQUE | (service_id, branch_id) | |
 | timestamps + soft_deletes | | |
 
-### 11. `orders`
+### 14. `orders`
 
 | Column | Type | Notes |
 |--------|------|-------|
@@ -209,7 +234,7 @@ Spatie Permission pivot.
 | finished_at | TIMESTAMP NULL | |
 | timestamps + soft_deletes | | |
 
-### 12. `order_items`
+### 15. `order_items`
 
 | Column | Type | Notes |
 |--------|------|-------|
@@ -222,7 +247,7 @@ Spatie Permission pivot.
 | qr_token | VARCHAR(64) NULL UNIQUE | UUID per item |
 | timestamps | | |
 
-### 13. `production_statuses` (static)
+### 16. `production_statuses` (static)
 
 | Column | Type | Notes |
 |--------|------|-------|
@@ -233,7 +258,7 @@ Spatie Permission pivot.
 | color | VARCHAR(7) | #FF6B00 for active |
 | description | TEXT NULL | |
 
-### 14. `order_item_status_logs`
+### 17. `order_item_status_logs`
 
 | Column | Type | Notes |
 |--------|------|-------|
@@ -244,7 +269,7 @@ Spatie Permission pivot.
 | scanned_by | BIGINT FK → users(id) | NULL on delete |
 | scan_time | TIMESTAMP | DEFAULT NOW() |
 
-### 15. `payments`
+### 18. `payments`
 
 | Column | Type | Notes |
 |--------|------|-------|
@@ -258,7 +283,7 @@ Spatie Permission pivot.
 | notes | TEXT NULL | |
 | timestamps | | |
 
-### 16. `refunds`
+### 19. `refunds`
 
 | Column | Type | Notes |
 |--------|------|-------|
@@ -563,7 +588,15 @@ Spatie Permission pivot.
 
 These tables are managed by Laravel itself and not by application migrations.
 
-### 36. `sessions`
+### 39. `password_reset_tokens`
+
+| Column | Type | Notes |
+|--------|------|-------|
+| email | VARCHAR PK | |
+| token | VARCHAR | |
+| created_at | TIMESTAMP NULL | |
+
+### 40. `sessions`
 
 | Column | Type | Notes |
 |--------|------|-------|

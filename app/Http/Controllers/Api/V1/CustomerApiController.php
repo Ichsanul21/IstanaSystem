@@ -9,21 +9,50 @@ use Illuminate\Http\Request;
 
 class CustomerApiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $customers = Customer::forCurrentBranch()
-            ->with('membershipTier')
-            ->latest()
-            ->paginate(15);
+        $query = Customer::forCurrentBranch()
+            ->with('membershipTier');
 
-        return ApiResponse::paginate($customers);
+        if ($search = $request->search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        if ($tierId = $request->tier_id) {
+            $query->where('membership_tier_id', $tierId);
+        }
+
+        if ($request->has('is_member')) {
+            $query->where('is_member', filter_var($request->is_member, FILTER_VALIDATE_BOOLEAN));
+        }
+
+        if ($sortBy = $request->sort_by) {
+            match ($sortBy) {
+                'name' => $query->orderBy('name'),
+                'newest' => $query->latest(),
+                'oldest' => $query->oldest(),
+                'spending' => $query->orderBy('lifetime_spending', 'desc'),
+                default => $query->latest(),
+            };
+        } else {
+            $query->latest();
+        }
+
+        return ApiResponse::paginate($query->paginate($request->per_page ?? 15));
     }
 
     public function show(Customer $customer)
     {
         $customer->load('membershipTier', 'orders');
 
-        return ApiResponse::success($customer);
+        $data = $customer->toArray();
+        $data['loyalty_points'] = $customer->loyaltyPointsTransactions()->sum('points');
+        $data['notes'] = $customer->notes;
+
+        return ApiResponse::success($data);
     }
 
     public function store(Request $request)

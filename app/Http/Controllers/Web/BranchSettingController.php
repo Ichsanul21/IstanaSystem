@@ -17,12 +17,13 @@ class BranchSettingController extends Controller
     {
         $groups = ['general', 'tax', 'loyalty', 'gateway', 'accounting', 'order', 'notification', 'inventory'];
         $settingValues = [];
+        $branches = Branch::all();
 
         foreach ($groups as $group) {
             $settingValues[$group] = $this->settings->getGroup($group, $branch->id);
         }
 
-        return view('settings.branch', compact('branch', 'settingValues'));
+        return view('settings.branch-settings', compact('branch', 'settingValues', 'branches'));
     }
 
     public function update(Branch $branch, Request $request)

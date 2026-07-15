@@ -24,4 +24,11 @@ class InventoryItem extends Model
     {
         return $this->hasMany(InventoryBatch::class, 'inventory_item_id');
     }
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, 'service_inventory_item')
+            ->withPivot('quantity')
+            ->withTimestamps();
+    }
 }

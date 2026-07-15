@@ -126,14 +126,14 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::get('/promotions/check/{code}', [PromotionController::class, 'check'])->middleware('permission:promotion.read')->name('promotions.check');
 
         // Inventory
+        Route::get('/inventory/stock', [InventoryStockController::class, 'index'])->middleware('permission:inventory.read')->name('inventory.stock.index');
+        Route::get('/inventory/stock/create', [InventoryStockController::class, 'create'])->middleware('permission:stock_in')->name('inventory.stock.create');
+        Route::post('/inventory/stock', [InventoryStockController::class, 'store'])->middleware('permission:stock_in')->name('inventory.stock.store');
         Route::resource('inventory', InventoryItemController::class)->middleware('permission:inventory.read|inventory.create|inventory.update|inventory.delete');
         Route::post('/inventory/{item}/add-stock', [InventoryItemController::class, 'addStock'])->middleware('permission:stock_in')->name('inventory.add-stock');
         Route::post('/inventory/{item}/transfer', [InventoryItemController::class, 'transfer'])->middleware('permission:stock_out')->name('inventory.transfer');
         Route::get('/inventory/{item}/stock-out', [InventoryStockController::class, 'out'])->middleware('permission:stock_out')->name('inventory.stock.out');
         Route::post('/inventory/{item}/stock-out', [InventoryStockController::class, 'deduct'])->middleware('permission:stock_out')->name('inventory.stock.deduct');
-        Route::get('/inventory/stock', [InventoryStockController::class, 'index'])->middleware('permission:inventory.read')->name('inventory.stock.index');
-        Route::get('/inventory/stock/create', [InventoryStockController::class, 'create'])->middleware('permission:stock_in')->name('inventory.stock.create');
-        Route::post('/inventory/stock', [InventoryStockController::class, 'store'])->middleware('permission:stock_in')->name('inventory.stock.store');
 
         // Services
         Route::resource('services', ServiceController::class)->middleware('permission:view_services|create_services|edit_services');
@@ -159,6 +159,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
             Route::get('/income-statement', [FinanceController::class, 'incomeStatement'])->name('income-statement');
 
             // Chart of Accounts CRUD
+            Route::get('/coa', [ChartOfAccountController::class, 'index'])->name('coa.index');
             Route::get('/coa/create', [ChartOfAccountController::class, 'create'])->name('coa.create');
             Route::post('/coa', [ChartOfAccountController::class, 'store'])->name('coa.store');
             Route::get('/coa/{chartOfAccount}/edit', [ChartOfAccountController::class, 'edit'])->name('coa.edit');

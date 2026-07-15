@@ -125,31 +125,38 @@ All components follow TailAdmin Pro patterns adapted to Blade + Alpine.js.
 
 ## Modals
 
+Dual API: supports both **event-driven** (existing Breeze pattern) and **inline x-data** (TailAdmin pattern).
+
 ```blade
-{{-- Modal with Alpine --}}
+{{-- API 1: Event-driven (name prop + $dispatch) --}}
+<x-ui.button x-on:click="$dispatch('open-modal', 'confirm-modal')">Buka Modal</x-ui.button>
+
+<x-ui.modal name="confirm-modal" maxWidth="lg">
+    <x-slot:title>Konfirmasi</x-slot:title>
+    <p>Apakah Anda yakin?</p>
+    <x-slot:footer>
+        <x-ui.button variant="outline" x-on:click="$dispatch('close-modal', 'confirm-modal')">Batal</x-ui.button>
+        <x-ui.button variant="primary">Ya, Hapus</x-ui.button>
+    </x-slot:footer>
+</x-ui.modal>
+
+{{-- API 2: Inline x-data (TailAdmin pattern) --}}
 <div x-data="{ open: false }">
     <x-ui.button @click="open = true">Buka Modal</x-ui.button>
     
-    <x-ui.modal x-show="open" @click.outside="open = false">
-        <x-slot:title>Konfirmasi</x-slot:title>
-        <p>Apakah Anda yakin?</p>
-        <x-slot:footer>
-            <x-ui.button variant="outline" @click="open = false">Batal</x-ui.button>
-            <x-ui.button variant="primary">Ya, Hapus</x-ui.button>
-        </x-slot:footer>
-    </x-ui.modal>
+    <div x-show="open" @click.outside="open = false" class="fixed inset-0 z-50">...</div>
 </div>
 ```
 
-**Modal Structure (TailAdmin pattern):**
+**Modal Structure:**
 ```
 ┌──────────────────────────────────────┐
 │  Modal Title                    [✕]  │
 ├──────────────────────────────────────┤
-│  Content area                        │
+│  Content area / $body or $slot       │
 │                                      │
 ├──────────────────────────────────────┤
-│  [Cancel]  [Confirm]                 │
+│  Footer actions (optional)           │
 └──────────────────────────────────────┘
 ```
 

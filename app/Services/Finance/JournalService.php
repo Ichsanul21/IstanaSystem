@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class JournalService
 {
-    public function createEntry(string $description, array $lines, ?int $branchId = null): JournalEntry
+    public function createEntry(string $description, array $lines, ?int $branchId = null, ?string $type = null, ?string $referenceType = null, ?int $referenceId = null): JournalEntry
     {
         $totalDebit = 0;
         $totalCredit = 0;
@@ -25,7 +25,7 @@ class JournalService
             throw new \InvalidArgumentException('Debit and credit totals must be equal.');
         }
 
-        return DB::transaction(function () use ($description, $lines, $branchId) {
+        return DB::transaction(function () use ($description, $lines, $branchId, $type, $referenceType, $referenceId) {
             $entryNumber = $this->generateEntryNumber();
 
             $period = \App\Models\AccountingPeriod::where('start_date', '<=', now())
@@ -38,8 +38,11 @@ class JournalService
                 'description' => $description,
                 'period_id' => $period?->id,
                 'branch_id' => $branchId,
-                'user_id' => Auth::id(),
-                'posted_at' => now(),
+                'created_by' => Auth::id(),
+                'entry_date' => now(),
+                'type' => $type ?? 'manual',
+                'reference_type' => $referenceType,
+                'reference_id' => $referenceId,
             ]);
 
             foreach ($lines as $line) {
@@ -74,7 +77,7 @@ class JournalService
             return 0;
         }
 
-        return match ($account->type) {
+        return match ($account->category) {
             'asset', 'expense' => $totalDebit - $totalCredit,
             'liability', 'equity', 'revenue' => $totalCredit - $totalDebit,
             default => $totalDebit - $totalCredit,
@@ -88,11 +91,24 @@ class JournalService
         $trialBalance = $accounts->map(function ($account) use ($branchId) {
             $balance = $this->getAccountBalance($account->id, $branchId);
 
+            $isCreditNorm = in_array($account->category, ['liability', 'equity', 'revenue'], true);
+
+            if ($isCreditNorm) {
+                return [
+                    'account_id' => $account->id,
+                    'account_code' => $account->code,
+                    'account_name' => $account->name,
+                    'type' => $account->category,
+                    'debit' => $balance < 0 ? abs($balance) : 0,
+                    'credit' => $balance > 0 ? $balance : 0,
+                ];
+            }
+
             return [
                 'account_id' => $account->id,
                 'account_code' => $account->code,
                 'account_name' => $account->name,
-                'type' => $account->type,
+                'type' => $account->category,
                 'debit' => $balance > 0 ? $balance : 0,
                 'credit' => $balance < 0 ? abs($balance) : 0,
             ];

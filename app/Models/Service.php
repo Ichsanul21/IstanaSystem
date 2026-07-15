@@ -22,4 +22,11 @@ class Service extends Model
     {
         return $this->hasMany(ServicePricing::class);
     }
+
+    public function inventoryItems()
+    {
+        return $this->belongsToMany(InventoryItem::class, 'service_inventory_item')
+            ->withPivot('quantity')
+            ->withTimestamps();
+    }
 }

@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasBranchScope;
 
 class Expense extends Model
 {
+    use HasBranchScope;
     protected $fillable = [
         'branch_id',
         'created_by',

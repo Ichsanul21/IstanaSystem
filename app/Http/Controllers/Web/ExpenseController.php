@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\ChartOfAccount;
 use App\Models\Expense;
+use App\Models\JournalEntry;
 use App\Services\Finance\JournalService;
 use Illuminate\Http\Request;
 

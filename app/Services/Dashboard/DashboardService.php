@@ -42,6 +42,52 @@ class DashboardService
         return compact('totalOrders', 'totalRevenue', 'pendingOrders', 'totalCustomers', 'avgOrderValue');
     }
 
+    public function getPeakHours(?int $branchId = null): array
+    {
+        $orders = Order::when($branchId, fn($q) => $q->where('branch_id', $branchId))
+            ->selectRaw("strftime('%H', created_at) as hour, COUNT(*) as total")
+            ->groupBy('hour')
+            ->orderBy('total', 'desc')
+            ->limit(5)
+            ->get();
+
+        return $orders->map(fn($o) => [
+            'hour' => $o->hour . ':00',
+            'total' => (int) $o->total,
+        ]);
+    }
+
+    public function getTopCustomers(?int $branchId = null, int $limit = 5): array
+    {
+        return Order::when($branchId, fn($q) => $q->where('branch_id', $branchId))
+            ->select('customer_id')
+            ->selectRaw('COUNT(*) as total_orders')
+            ->selectRaw('COALESCE(SUM(grand_total), 0) as total_spent')
+            ->whereNotNull('customer_id')
+            ->groupBy('customer_id')
+            ->orderBy('total_spent', 'desc')
+            ->limit($limit)
+            ->with('customer:id,name,phone')
+            ->get()
+            ->map(fn($o) => [
+                'name' => $o->customer?->name ?? 'Unknown',
+                'phone' => $o->customer?->phone ?? '',
+                'total_orders' => (int) $o->total_orders,
+                'total_spent' => (float) $o->total_spent,
+            ])
+            ->toArray();
+    }
+
+    public function getAverageOrderValue(?int $branchId = null): float
+    {
+        $orders = Order::when($branchId, fn($q) => $q->where('branch_id', $branchId))
+            ->where('payment_status', 'paid');
+
+        $count = (clone $orders)->count();
+
+        return $count > 0 ? round((clone $orders)->sum('grand_total') / $count, 2) : 0;
+    }
+
     public function getRevenueService(): RevenueService
     {
         return $this->revenueService;

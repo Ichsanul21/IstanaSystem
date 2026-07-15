@@ -10,9 +10,10 @@ class VerifyWebhookSignature
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->is('api/webhook/midtrans')) {
+        if ($request->is('api/v1/payments/midtrans/callback')) {
             $signature = $request->input('signature_key');
             $orderId = $request->input('order_id');
+            $statusCode = $request->input('status_code');
             $grossAmount = $request->input('gross_amount');
             $serverKey = config('services.midtrans.server_key');
 
@@ -20,7 +21,7 @@ class VerifyWebhookSignature
                 return response()->json(['message' => 'Server key not configured'], 500);
             }
 
-            $expected = hash('sha512', $orderId . $grossAmount . $serverKey);
+            $expected = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
 
             if ($signature !== $expected) {
                 return response()->json(['message' => 'Invalid signature'], 401);

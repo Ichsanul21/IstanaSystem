@@ -59,8 +59,16 @@ class DashboardApiController extends Controller
     {
         $branchId = $request->branch_id ?? currentBranchId();
         $metrics = $this->dashboardService->getMetrics($branchId);
+        $peakHours = $this->dashboardService->getPeakHours($branchId);
+        $topCustomers = $this->dashboardService->getTopCustomers($branchId);
+        $avgOrderValue = $this->dashboardService->getAverageOrderValue($branchId);
 
-        return ApiResponse::success($metrics);
+        return ApiResponse::success([
+            'metrics' => $metrics,
+            'peak_hours' => $peakHours,
+            'top_customers' => $topCustomers,
+            'average_order_value' => $avgOrderValue,
+        ]);
     }
 
     public function production(Request $request)

@@ -1,11 +1,16 @@
 @php
-$tabs = [
-    ['id' => 'pendapatan', 'label' => 'Pendapatan'],
-    ['id' => 'operasional', 'label' => 'Operasional'],
-    ['id' => 'produksi', 'label' => 'Produksi'],
-    ['id' => 'keuangan', 'label' => 'Keuangan'],
-    ['id' => 'inventory', 'label' => 'Inventory'],
+$allTabs = [
+    ['id' => 'pendapatan', 'label' => 'Pendapatan', 'can' => null],
+    ['id' => 'operasional', 'label' => 'Operasional', 'can' => null],
+    ['id' => 'produksi', 'label' => 'Produksi', 'can' => 'workshop.read'],
+    ['id' => 'keuangan', 'label' => 'Keuangan', 'can' => 'finance.read'],
+    ['id' => 'inventory', 'label' => 'Inventory', 'can' => 'inventory.read'],
 ];
+
+$tabs = array_values(array_filter($allTabs, fn($t) => !$t['can'] || auth()->user()->can($t['can'])));
+$activeTab = in_array(request('tab', $tabs[0]['id'] ?? 'pendapatan'), array_column($tabs, 'id'))
+    ? request('tab', $tabs[0]['id'] ?? 'pendapatan')
+    : ($tabs[0]['id'] ?? 'pendapatan');
 
 $periods = [
     'today' => 'Hari Ini',
@@ -95,6 +100,7 @@ $selectedPeriod = request('period', $dateFrom && $dateTo ? 'custom' : 'today');
             ])
         </div>
 
+        @can('workshop.read')
         <div x-show="activeTab === 'produksi'" x-cloak>
             @include('dashboard.tabs.produksi', [
                 'queuePerStatus' => $queuePerStatus,
@@ -102,6 +108,7 @@ $selectedPeriod = request('period', $dateFrom && $dateTo ? 'custom' : 'today');
                 'avgProcessingTime' => $avgProcessingTime,
             ])
         </div>
+        @endcan
 
         @can('finance.read')
         <div x-show="activeTab === 'keuangan'" x-cloak>
@@ -113,6 +120,7 @@ $selectedPeriod = request('period', $dateFrom && $dateTo ? 'custom' : 'today');
         </div>
         @endcan
 
+        @can('inventory.read')
         <div x-show="activeTab === 'inventory'" x-cloak>
             @include('dashboard.tabs.inventory', [
                 'stockValue' => $stockValue,
@@ -120,6 +128,7 @@ $selectedPeriod = request('period', $dateFrom && $dateTo ? 'custom' : 'today');
                 'stockMovement' => $stockMovement,
             ])
         </div>
+        @endcan
     </x-ui.tabs>
 </x-layouts.admin>
 
