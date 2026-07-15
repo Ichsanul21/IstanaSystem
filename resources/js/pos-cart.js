@@ -58,7 +58,7 @@ export default function posCart() {
         },
         searchCustomer() {
             if (this.customerSearch.length < 2) { this.customerResults = []; return; }
-            fetch(`/customers/search/json?q=${encodeURIComponent(this.customerSearch)}`)
+            fetch(`/admin/customers/search/json?q=${encodeURIComponent(this.customerSearch)}`)
                 .then(r => r.json())
                 .then(data => { this.customerResults = data; })
                 .catch(() => { this.customerResults = []; });
@@ -89,7 +89,7 @@ export default function posCart() {
             formData.append('name', name);
             formData.append('phone', this.newCustomerPhone.trim());
 
-            fetch('/customers/quick-create', {
+            fetch('/admin/customers/quick-create', {
                 method: 'POST',
                 headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '' },
                 body: formData
