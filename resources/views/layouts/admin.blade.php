@@ -93,15 +93,15 @@
                 @if($item['can'] ?? false)
                     @can($item['can'])
                         @if($hasChildren)
-                            <div x-data="{ open: $store.sidebar.isSubmenuOpen('{{ $item['label'] }}') }">
+                            <div>
                                 <button x-on:click="$store.sidebar.toggleSubmenu('{{ $item['label'] }}')"
                                         class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-gray-100 dark:hover:bg-dark-800 {{ $childActive ? 'bg-lo-50 text-lo dark:bg-lo/10' : 'text-gray-600 dark:text-gray-400' }}"
                                         :class="$store.sidebar.collapsed ? 'justify-center px-2' : ''">
                                     @include('layouts.partials.nav-icon', ['icon' => $item['icon']])
                                     <span x-show="!$store.sidebar.collapsed" class="flex-1 truncate text-left">{{ $item['label'] }}</span>
-                                    <svg x-show="!$store.sidebar.collapsed" class="h-4 w-4 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                                    <svg x-show="!$store.sidebar.collapsed" class="h-4 w-4 transition-transform" :class="$store.sidebar.isSubmenuOpen('{{ $item['label'] }}') ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
                                 </button>
-                                <div x-show="open && !$store.sidebar.collapsed" x-collapse.duration.200ms>
+                                <div x-show="$store.sidebar.isSubmenuOpen('{{ $item['label'] }}') && !$store.sidebar.collapsed" x-collapse.duration.200ms>
                                     <div class="mt-1 ml-8 space-y-1">
                                         @foreach($item['children'] as $child)
                                             @if($child['can'] ?? false)
@@ -134,15 +134,15 @@
                     @endcan
                 @else
                     @if($hasChildren)
-                        <div x-data="{ open: $store.sidebar.isSubmenuOpen('{{ $item['label'] }}') }">
+                        <div>
                             <button x-on:click="$store.sidebar.toggleSubmenu('{{ $item['label'] }}')"
                                     class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-gray-100 dark:hover:bg-dark-800 {{ $childActive ? 'bg-lo-50 text-lo dark:bg-lo/10' : 'text-gray-600 dark:text-gray-400' }}"
                                     :class="$store.sidebar.collapsed ? 'justify-center px-2' : ''">
                                 @include('layouts.partials.nav-icon', ['icon' => $item['icon']])
                                 <span x-show="!$store.sidebar.collapsed" class="flex-1 truncate text-left">{{ $item['label'] }}</span>
-                                <svg x-show="!$store.sidebar.collapsed" class="h-4 w-4 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+                                <svg x-show="!$store.sidebar.collapsed" class="h-4 w-4 transition-transform" :class="$store.sidebar.isSubmenuOpen('{{ $item['label'] }}') ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
                             </button>
-                            <div x-show="open && !$store.sidebar.collapsed" x-collapse.duration.200ms>
+                            <div x-show="$store.sidebar.isSubmenuOpen('{{ $item['label'] }}') && !$store.sidebar.collapsed" x-collapse.duration.200ms>
                                 <div class="mt-1 ml-8 space-y-1">
                                     @foreach($item['children'] as $child)
                                         @if($child['can'] ?? false)
