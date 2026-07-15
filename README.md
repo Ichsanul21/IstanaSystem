@@ -10,9 +10,9 @@ Sistem manajemen laundry **multi-cabang multi-workshop** dengan fitur POS, QR-ba
 |---------|-----------|
 | Framework | Laravel 13 + Blade |
 | CSS | Tailwind CSS v4 (`@tailwindcss/vite`, no `tailwind.config.js`) |
-| JS | Alpine.js 3 (stores: theme, sidebar) + Chart.js (CDN) |
+| JS | Alpine.js 3 (stores: theme, sidebar, pos-cart; Alpine components: searchPalette, notifBell) + Chart.js (CDN) |
 | Auth | Laravel Breeze (Blade) v2.4 |
-| Roles | Spatie Permission v8 (8 roles, 37 permissions) |
+| Roles | Spatie Permission v8 (8 roles, 67+ permissions) |
 | Payments | Midtrans Snap v2.6 (VA, QRIS, E-Wallet, Kartu) |
 | PDF | DomPDF dev-master |
 | Excel | Laravel Excel 3.1 |
@@ -36,6 +36,9 @@ Sistem manajemen laundry **multi-cabang multi-workshop** dengan fitur POS, QR-ba
 - **Backup & audit log**
 - **8 role pengguna** — Developer, Super Admin, Owner, Branch Admin, Workshop Admin, CS, Cashier, Workshop Staff
 - **Dark mode** — class-based, localStorage persistence
+- **Search overlay** (Ctrl+K) dengan navigasi menu real-time
+- **Notification bell** — unread count + dropdown dari activity logs
+- **COGS auto-journaling** — FIFO inventory consumption → double-entry (Dr Inventory Expense / Cr Inventory Asset)
 - **14 modul export** (Excel/PDF)
 
 ---
@@ -119,6 +122,11 @@ app/
     PromotionService.php      # Eligibility, usage tracking
     FinanceService.php        # Double-entry journal, revenue/expense
     DiscountCalculator.php    # Percentage, fixed, buy-get
+    Order/PaymentService.php  # Payment creation, allocation
+    Order/RefundService.php   # Refund processing, journal reversal
+    Order/OrderInventoryService.php  # COGS auto-journaling (FIFO)
+    Dashboard/DashboardService.php    # Peak hours, top customers, AOV
+    Dashboard/FinanceService.php      # Dashboard finance delegation
   Traits/
     HasBranchScope.php        # scopeForBranch, scopeForCurrentBranch
     LogsActivity.php          # Auto-log CRUD events
@@ -154,10 +162,10 @@ routes/
   webhook.php                 # Midtrans webhook
 
 database/
-  migrations/                 # 68 file
+  migrations/                 # 72 file
   seeders/                    # 7 seeder (idempotent)
 
-tests/                        # 185 test (14 unit + 21 feature)
+tests/                        # 462 tests across unit, web, and API
 docs/                         # 44 file dokumentasi lengkap
 ```
 
@@ -222,7 +230,7 @@ php artisan test Tests/Feature/Web/OrderControllerTest
 php artisan test --stop-on-failure
 ```
 
-**Setup**: 185 test (14 unit + 21 feature), SQLite in-memory, data di-seed otomatis per-test via `TestCase::setUp()`.
+**Setup**: 462 tests, SQLite in-memory, data di-seed otomatis per-test via `TestCase::setUp()`.
 
 ---
 
