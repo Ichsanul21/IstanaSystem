@@ -1,4 +1,4 @@
-<x-settings::group-layout title="Loyalitas" description="Pengaturan program loyalitas pelanggan" group="loyalty">
+<x-settings.group-layout title="Loyalitas" description="Pengaturan program loyalitas pelanggan" group="loyalty">
     <x-ui.card>
         <x-slot:header>
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Poin Loyalitas</h3>
@@ -48,4 +48,4 @@
             />
         </div>
     </x-ui.card>
-</x-settings::group-layout>
+</x-settings.group-layout>

@@ -1,4 +1,4 @@
-<x-settings::group-layout title="Inventaris" description="Pengaturan manajemen stok dan inventaris" group="inventory">
+<x-settings.group-layout title="Inventaris" description="Pengaturan manajemen stok dan inventaris" group="inventory">
     <x-ui.card>
         <x-slot:header>
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Pengaturan Stok</h3>
@@ -20,4 +20,4 @@
             />
         </div>
     </x-ui.card>
-</x-settings::group-layout>
+</x-settings.group-layout>

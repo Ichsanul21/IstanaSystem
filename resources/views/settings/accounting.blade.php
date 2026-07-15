@@ -4,7 +4,7 @@
     $accountOptions = $accounts->pluck('name', 'code')->mapWithKeys(fn ($name, $code) => [$code => "{$code} - {$name}"])->toArray();
 @endphp
 
-<x-settings::group-layout title="Akuntansi" description="Pengaturan akuntansi dan keuangan" group="accounting">
+<x-settings.group-layout title="Akuntansi" description="Pengaturan akuntansi dan keuangan" group="accounting">
     <x-ui.card>
         <x-slot:header>
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Periode Aktif</h3>
@@ -42,4 +42,4 @@
             />
         </div>
     </x-ui.card>
-</x-settings::group-layout>
+</x-settings.group-layout>

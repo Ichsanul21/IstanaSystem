@@ -1,4 +1,4 @@
-<x-settings::group-layout title="Payment Gateway" description="Pengaturan Midtrans payment gateway" group="gateway">
+<x-settings.group-layout title="Payment Gateway" description="Pengaturan Midtrans payment gateway" group="gateway">
     <x-ui.card>
         <x-slot:header>
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Status Gateway</h3>
@@ -45,4 +45,4 @@
             />
         </div>
     </x-ui.card>
-</x-settings::group-layout>
+</x-settings.group-layout>

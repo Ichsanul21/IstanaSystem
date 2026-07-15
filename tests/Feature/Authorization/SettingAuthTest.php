@@ -37,7 +37,7 @@ class SettingAuthTest extends TestCase
     {
         $this->user->givePermissionTo('settings.read');
         $response = $this->actingAs($this->user)->get(route('admin.settings.group', 'general'));
-        $this->assertNotEquals(403, $response->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
 
         $this->user->revokePermissionTo('settings.read');
         $this->actingAs($this->user)->get(route('admin.settings.group', 'general'))->assertForbidden();

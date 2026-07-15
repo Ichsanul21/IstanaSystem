@@ -1,4 +1,4 @@
-<x-settings::group-layout title="Pesanan" description="Pengaturan order dan alur kerja" group="order">
+<x-settings.group-layout title="Pesanan" description="Pengaturan order dan alur kerja" group="order">
     <x-ui.card>
         <x-slot:header>
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Nomor Pesanan</h3>
@@ -34,4 +34,4 @@
             />
         </div>
     </x-ui.card>
-</x-settings::group-layout>
+</x-settings.group-layout>

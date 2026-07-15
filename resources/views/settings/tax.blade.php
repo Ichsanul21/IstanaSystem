@@ -2,7 +2,7 @@
     $regime = old('tax_regime', $settingValues['tax_regime'] ?? 'pp23');
 @endphp
 
-<x-settings::group-layout title="Pajak" description="Pengaturan perpajakan" group="tax">
+<x-settings.group-layout title="Pajak" description="Pengaturan perpajakan" group="tax">
     <x-ui.card>
         <x-slot:header>
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Regime Pajak</h3>
@@ -56,4 +56,4 @@
             </div>
         </x-ui.card>
     </div>
-</x-settings::group-layout>
+</x-settings.group-layout>

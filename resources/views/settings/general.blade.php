@@ -1,4 +1,4 @@
-<x-settings::group-layout title="Umum" description="Pengaturan umum aplikasi" group="general">
+<x-settings.group-layout title="Umum" description="Pengaturan umum aplikasi" group="general">
     <x-ui.card>
         <x-slot:header>
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Informasi Toko</h3>
@@ -47,4 +47,4 @@
             </div>
         </div>
     </x-ui.card>
-</x-settings::group-layout>
+</x-settings.group-layout>

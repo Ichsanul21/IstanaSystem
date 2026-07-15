@@ -1,4 +1,4 @@
-<x-settings::group-layout title="Notifikasi" description="Pengaturan notifikasi dan WhatsApp" group="notification">
+<x-settings.group-layout title="Notifikasi" description="Pengaturan notifikasi dan WhatsApp" group="notification">
     <x-ui.card>
         <x-slot:header>
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">WhatsApp</h3>
@@ -64,4 +64,4 @@
             />
         </div>
     </x-ui.card>
-</x-settings::group-layout>
+</x-settings.group-layout>
