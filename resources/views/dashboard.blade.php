@@ -33,7 +33,31 @@ $selectedPeriod = request('period', $dateFrom && $dateTo ? 'custom' : 'today');
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ now()->format('l, d F Y') }}</p>
             </div>
-            <div class="flex items-center gap-3" x-data="dateRange()">
+            @php
+                $dtFmt = fn($d) => $d ? $d->format('Y-m-d') : '';
+                $today = now();
+            @endphp
+            <div class="flex items-center gap-3" x-data="{
+                period: '{{ $selectedPeriod }}',
+                dateFrom: '{{ $dtFmt($dateFrom ?? null) }}',
+                dateTo: '{{ $dtFmt($dateTo ?? null) }}',
+                onPeriodChange() {
+                    const today = new Date();
+                    const fmt = d => d.toISOString().split('T')[0];
+                    if (this.period === 'today') {
+                        this.dateFrom = fmt(today);
+                        this.dateTo = fmt(today);
+                    } else if (this.period === 'this_week') {
+                        const start = new Date(today);
+                        start.setDate(today.getDate() - today.getDay() + 1);
+                        this.dateFrom = fmt(start);
+                        this.dateTo = fmt(today);
+                    } else if (this.period === 'this_month') {
+                        this.dateFrom = fmt(new Date(today.getFullYear(), today.getMonth(), 1));
+                        this.dateTo = fmt(today);
+                    }
+                }
+            }">
                 <form method="GET" action="{{ route('admin.dashboard') }}" x-ref="filterForm" class="flex items-center gap-2">
                     @if($branches->isNotEmpty())
                     <select name="branch_id" x-on:change="$refs.filterForm.submit()" class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm px-3 py-2 focus:ring-primary focus:border-primary">
@@ -132,31 +156,3 @@ $selectedPeriod = request('period', $dateFrom && $dateTo ? 'custom' : 'today');
     </x-ui.tabs>
 </x-layouts.admin>
 
-@push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-<script>
-function dateRange() {
-    return {
-        period: '{{ $selectedPeriod }}',
-        dateFrom: '{{ $dateFrom ?? "" }}',
-        dateTo: '{{ $dateTo ?? "" }}',
-        onPeriodChange() {
-            const today = new Date();
-            const fmt = d => d.toISOString().split('T')[0];
-            if (this.period === 'today') {
-                this.dateFrom = fmt(today);
-                this.dateTo = fmt(today);
-            } else if (this.period === 'this_week') {
-                const start = new Date(today);
-                start.setDate(today.getDate() - today.getDay() + 1);
-                this.dateFrom = fmt(start);
-                this.dateTo = fmt(today);
-            } else if (this.period === 'this_month') {
-                this.dateFrom = fmt(new Date(today.getFullYear(), today.getMonth(), 1));
-                this.dateTo = fmt(today);
-            }
-        }
-    }
-}
-</script>
-@endpush

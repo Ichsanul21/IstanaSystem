@@ -1,8 +1,11 @@
 import Alpine from 'alpinejs';
+import collapse from '@alpinejs/collapse';
 import Chart from 'chart.js/auto';
 import { themeStore } from './stores/theme';
 import { sidebarStore } from './stores/sidebar';
 import posCart from './pos-cart';
+
+Alpine.plugin(collapse);
 
 window.Chart = Chart;
 

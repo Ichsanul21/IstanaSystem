@@ -121,6 +121,22 @@ Route::prefix('v1')->group(function () {
         Route::post('/inventory/stock/transfer', [InventoryApiController::class, 'stockTransfer'])->middleware('permission:stock_out');
         Route::get('/inventory/alerts', [InventoryApiController::class, 'alerts'])->middleware('permission:inventory.read');
 
+        // Activity Logs (used by notification bell)
+        Route::get('/activity-logs', function (\Illuminate\Http\Request $request) {
+            return \App\Models\ActivityLog::with('user')
+                ->forCurrentBranch()
+                ->latest()
+                ->take(min((int) $request->per_page ?: 5, 50))
+                ->get()
+                ->map(fn($log) => [
+                    'id' => $log->id,
+                    'description' => $log->description ?: $log->event,
+                    'event' => $log->event,
+                    'created_at' => $log->created_at?->toISOString(),
+                    'time' => $log->created_at?->diffForHumans(),
+                ]);
+        });
+
         // Settings
         Route::get('/settings', [SettingApiController::class, 'index'])->middleware('permission:settings.read');
         Route::get('/settings/{group}', [SettingApiController::class, 'show'])->middleware('permission:settings.read');
