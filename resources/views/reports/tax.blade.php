@@ -33,8 +33,8 @@
         <x-ui.table :headers="['Order', 'Jenis Pajak', 'Dasar Pengenaan', 'Nilai Pajak', 'Tanggal']">
             @forelse($logs as $log)
             <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                <td class="px-6 py-4 text-sm font-medium text-primary">#{{ $log->order->order_number ?? '-' }}</td>
-                <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">{{ $log->taxConfig->name ?? $log->tax_type ?? '-' }}</td>
+                <td class="px-6 py-4 text-sm font-medium text-primary">{{ $log->journalEntry->description ?? $log->journalEntry->entry_number ?? '-' }}</td>
+                <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">{{ $log->regime ?? '-' }}</td>
                 <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">Rp {{ number_format($log->base_amount ?? 0, 0, ',', '.') }}</td>
                 <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">Rp {{ number_format($log->tax_amount ?? 0, 0, ',', '.') }}</td>
                 <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ $log->created_at }}</td>

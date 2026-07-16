@@ -10,12 +10,6 @@ use Illuminate\Http\Request;
 
 class ServicePricingController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('role:Developer,Super Admin,Branch Admin')->only(['index']);
-        $this->middleware('role:Developer,Super Admin')->except(['index']);
-    }
-
     public function index()
     {
         $branchId = request('branch_id', currentBranchId());

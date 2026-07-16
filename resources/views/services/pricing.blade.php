@@ -34,12 +34,12 @@
                     @if(isset($pricing)) @method('PUT') @endif
                     <input type="hidden" name="branch_id" value="{{ $branchId ?? $pricing->branch_id }}">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <x-ui.select name="service_id" label="Layanan" :options="$services->map(fn($s) => ['value' => $s->id, 'label' => $s->name])->toArray()" required />
+                        <x-ui.select name="service_id" label="Layanan" :options="$services->pluck('name', 'id')->toArray()" required />
                         <x-ui.input name="price" label="Harga" type="number" step="1" min="0" value="{{ old('price', $pricing->price ?? '') }}" required />
                         <x-ui.input name="min_weight" label="Berat Minimal (kg)" type="number" step="0.5" min="0" value="{{ old('min_weight', $pricing->min_weight ?? '') }}" />
                         <x-ui.input name="max_weight" label="Berat Maksimal (kg)" type="number" step="0.5" min="0" value="{{ old('max_weight', $pricing->max_weight ?? '') }}" />
                         <x-ui.input name="estimated_days" label="Estimasi (hari)" type="number" min="1" value="{{ old('estimated_days', $pricing->estimated_days ?? '') }}" />
-                        <x-ui.select name="is_active" label="Status" :options="[['value' => 1, 'label' => 'Aktif'], ['value' => 0, 'label' => 'Nonaktif']]" value="{{ old('is_active', $pricing->is_active ?? true) ? 1 : 0 }}" />
+                        <x-ui.select name="is_active" label="Status" :options="[1 => 'Aktif', 0 => 'Nonaktif']" value="{{ old('is_active', $pricing->is_active ?? true) ? 1 : 0 }}" />
                     </div>
                     <div class="flex justify-end space-x-3 mt-4">
                         <x-ui.button type="button" variant="ghost" onclick="window.location='{{ route('admin.services.pricing.index', ['branch_id' => $branchId]) }}'">Batal</x-ui.button>

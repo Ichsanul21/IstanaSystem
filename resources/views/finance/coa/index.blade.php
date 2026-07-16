@@ -18,7 +18,7 @@
                     <tr class="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-600 dark:text-gray-400">{{ $account->code }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ $account->name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ ucfirst($account->type) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ ucfirst($account->category) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ ucfirst($account->normal_balance ?? 'debit') }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             @if($account->is_active)

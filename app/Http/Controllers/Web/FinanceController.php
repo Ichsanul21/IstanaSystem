@@ -73,7 +73,7 @@ class FinanceController extends Controller
                 ->whereHas('journalEntry', fn($q) => $q->forCurrentBranch())
                 ->sum('credit');
 
-            $account->balance = match ($account->type) {
+            $account->balance = match ($account->category) {
                 'asset', 'expense' => $debit - $credit,
                 'liability', 'equity', 'revenue' => $credit - $debit,
                 default => $debit - $credit,
@@ -87,8 +87,8 @@ class FinanceController extends Controller
 
     public function incomeStatement()
     {
-        $revenueAccounts = ChartOfAccount::where('type', 'revenue')->where('is_active', true)->get();
-        $expenseAccounts = ChartOfAccount::where('type', 'expense')->where('is_active', true)->get();
+        $revenueAccounts = ChartOfAccount::where('category', 'revenue')->where('is_active', true)->get();
+        $expenseAccounts = ChartOfAccount::where('category', 'expense')->where('is_active', true)->get();
 
         $revenues = $revenueAccounts->map(function ($account) {
             $account->balance = JournalEntryLine::where('account_id', $account->id)

@@ -1,5 +1,5 @@
 <div x-data="gatewayPayment()" class="mt-4">
-    <input type="hidden" name="snap_token" x-model="snapToken">
+    <input type="hidden" name="snap_token" :value="snapToken">
 
     <template x-if="!snapToken">
         <x-ui.button type="button" variant="primary" x-on:click="requestSnap" :loading="loading">

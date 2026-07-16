@@ -17,6 +17,7 @@ class PaymentRequest extends FormRequest
             'amount' => 'required|numeric|min:0.01',
             'payment_method' => 'required|string|in:cash,transfer,qris,gateway',
             'reference' => 'nullable|string|max:255',
+            'notes' => 'nullable|string|max:1000',
         ];
     }
 }

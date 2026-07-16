@@ -15,6 +15,29 @@ class MembershipTierController extends Controller
         return view('membership-tiers.index', compact('tiers'));
     }
 
+    public function create()
+    {
+        return view('membership-tiers.create');
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'min_points' => 'required|integer|min:0',
+            'discount_percent' => 'required|numeric|min:0|max:100',
+            'color' => 'nullable|string|max:20',
+            'is_active' => 'boolean',
+        ]);
+
+        $data['is_active'] = $request->boolean('is_active');
+
+        MembershipTier::create($data);
+
+        return redirect()->route('admin.membership-tiers.index')
+            ->with('success', 'Tier member berhasil ditambahkan.');
+    }
+
     public function edit(MembershipTier $membershipTier)
     {
         return view('membership-tiers.edit', compact('membershipTier'));

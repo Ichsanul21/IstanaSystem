@@ -29,7 +29,7 @@ class RefundController extends Controller
             'order_id' => $order->id,
             'amount' => $request->amount,
             'reason' => $request->reason,
-            'status' => 'requested',
+            'status' => 'pending',
             'requested_by' => Auth::id(),
         ]);
 
@@ -39,7 +39,7 @@ class RefundController extends Controller
     public function approve(Refund $refund)
     {
         $refund->update([
-            'status' => 'followed',
+            'status' => 'approved',
             'approved_by' => Auth::id(),
             'approved_at' => now(),
         ]);

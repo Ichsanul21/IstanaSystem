@@ -67,7 +67,7 @@ class RefundTest extends TestCase
             ->post(route('admin.refunds.approve', $refund))
             ->assertRedirect(route('admin.refunds.index'));
 
-        $this->assertEquals('followed', $refund->fresh()->status);
+        $this->assertEquals('approved', $refund->fresh()->status);
     }
 
     public function test_reject(): void
@@ -93,7 +93,7 @@ class RefundTest extends TestCase
         ]);
         $refund = Refund::factory()->create([
             'order_id' => $order->id,
-            'status' => 'followed',
+            'status' => 'approved',
             'amount' => 10000,
             'requested_by' => User::factory()->create()->id,
         ]);

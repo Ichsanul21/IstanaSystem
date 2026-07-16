@@ -39,7 +39,6 @@
                             <div class="flex items-center gap-2">
                                 @can('edit_services')
                                 <x-ui.button href="{{ route('admin.services.edit', $service) }}" variant="ghost" size="sm">Edit</x-ui.button>
-                                @endcan
                                 <form method="POST" action="{{ route('admin.services.destroy', $service) }}" onsubmit="return confirm('Hapus layanan ini?')" class="inline">
                                     @csrf @method('DELETE')
                                     <x-ui.button type="submit" size="sm" variant="ghost" class="text-red-600 hover:text-red-700">Hapus</x-ui.button>

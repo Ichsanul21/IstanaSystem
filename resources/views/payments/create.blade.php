@@ -42,7 +42,7 @@
                 @csrf
                 <input type="hidden" name="order_id" value="{{ $order->id ?? $order['id'] }}">
                 <x-ui.input type="number" name="amount" label="Jumlah Dibayar" :value="old('amount', ($order->grand_total ?? 0) - ($order->paid_amount ?? 0))" required />
-                <x-ui.select name="method" label="Metode Pembayaran" :options="['cash' => 'Tunai', 'transfer' => 'Transfer Bank', 'qris' => 'QRIS', 'gateway' => 'Payment Gateway']" required />
+                <x-ui.select name="payment_method" label="Metode Pembayaran" :options="['cash' => 'Tunai', 'transfer' => 'Transfer Bank', 'qris' => 'QRIS', 'gateway' => 'Payment Gateway']" required />
                 <x-ui.input type="text" name="reference" label="Referensi (opsional)" placeholder="No. referensi / bukti" />
                 <x-ui.textarea name="notes" label="Catatan" />
                 <x-ui.button type="submit" variant="primary" class="w-full">Konfirmasi Pembayaran</x-ui.button>

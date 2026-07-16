@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ProductionStatus;
+use App\Models\Workshop;
 use App\Enums\ProductionStatus as ProductionStatusEnum;
 use App\Services\Workshop\WorkshopService;
 use App\Services\Workshop\StatusTransitionService;
@@ -27,7 +28,7 @@ class WorkshopController extends Controller
             ->get()
             ->groupBy(function ($item) {
                 $latestLog = $item->statusLogs->first();
-                return $latestLog?->productionStatus?->code ?? 'received';
+                return $latestLog?->productionStatus?->code ?? 'TERIMA';
             });
 
         return view('workshop.index', compact('grouped'));
@@ -97,7 +98,7 @@ class WorkshopController extends Controller
                 $request->notes
             );
 
-            return redirect()->route('admin.workshop.items.show', $orderItem)
+            return redirect()->route('admin.workshop.index')
                 ->with('success', 'Status produksi berhasil diperbarui.')
                 ->with('wa_notify', true);
         } catch (\App\Exceptions\InvalidStatusTransitionException $e) {
@@ -112,5 +113,66 @@ class WorkshopController extends Controller
         $item = $orderItem;
 
         return view('workshop.show', compact('item'));
+    }
+
+    public function list()
+    {
+        $workshops = Workshop::paginate(10);
+        return view('workshops.index', compact('workshops'));
+    }
+
+    public function create()
+    {
+        return view('workshops.create');
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'code' => 'required|string|max:20|unique:workshops,code',
+            'name' => 'required|string|max:255',
+            'address' => 'nullable|string',
+            'phone' => 'nullable|string|max:20',
+            'is_active' => 'boolean',
+        ]);
+
+        Workshop::create($validated);
+
+        return redirect()->route('admin.workshops.index')
+            ->with('success', 'Workshop berhasil ditambahkan.');
+    }
+
+    public function edit(Workshop $workshop)
+    {
+        return view('workshops.edit', compact('workshop'));
+    }
+
+    public function update(Request $request, Workshop $workshop)
+    {
+        $validated = $request->validate([
+            'code' => 'required|string|max:20|unique:workshops,code,' . $workshop->id,
+            'name' => 'required|string|max:255',
+            'address' => 'nullable|string',
+            'phone' => 'nullable|string|max:20',
+            'is_active' => 'boolean',
+        ]);
+
+        $workshop->update($validated);
+
+        return redirect()->route('admin.workshops.index')
+            ->with('success', 'Workshop berhasil diperbarui.');
+    }
+
+    public function destroy(Workshop $workshop)
+    {
+        if ($workshop->branches()->exists()) {
+            return redirect()->route('admin.workshops.index')
+                ->with('error', 'Workshop tidak bisa dihapus karena masih memiliki cabang.');
+        }
+
+        $workshop->delete();
+
+        return redirect()->route('admin.workshops.index')
+            ->with('success', 'Workshop berhasil dihapus.');
     }
 }

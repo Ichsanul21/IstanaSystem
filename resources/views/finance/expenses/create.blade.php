@@ -17,17 +17,10 @@
                     @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <x-ui.select name="category" label="Kategori" :options="$categories ?? []" placeholder="Pilih Kategori" required />
-                        <x-ui.input name="expense_date" label="Tanggal" type="date" required :value="old('expense_date', date('Y-m-d'))" />
+                        <x-ui.input name="posted_at" label="Tanggal" type="date" required :value="old('posted_at', date('Y-m-d'))" />
                     </div>
                     <x-ui.textarea name="description" label="Deskripsi" rows="3" required />
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <x-ui.input name="amount" label="Jumlah" type="number" step="0.01" min="0" required />
-                        <x-ui.select name="payment_method" label="Metode Pembayaran" :options="['cash' => 'Cash', 'transfer' => 'Transfer', 'credit_card' => 'Credit Card', 'other' => 'Lainnya']" placeholder="Pilih Metode" />
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <x-ui.input name="reference" label="Referensi" help="No. invoice / nota (opsional)" />
-                    </div>
-                    <x-ui.textarea name="notes" label="Catatan" rows="2" help="Catatan tambahan (opsional)" />
+                    <x-ui.input name="amount" label="Jumlah" type="number" step="0.01" min="0" required />
                     <div class="flex items-center justify-end gap-3 border-t border-gray-200 dark:border-gray-700 pt-4">
                         <x-ui.button href="{{ route('admin.finance.expenses.index') }}" variant="ghost">Batal</x-ui.button>
                         <x-ui.button type="submit" variant="primary">Simpan</x-ui.button>

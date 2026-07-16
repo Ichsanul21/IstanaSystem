@@ -6,7 +6,7 @@ enum PromotionType: string
 {
     case Percentage = 'percentage';
     case Fixed = 'fixed';
-    case BuyXGetY = 'buy_x_get_y';
+    case BuyXGetY = 'buy_get';
 
     public function label(): string
     {

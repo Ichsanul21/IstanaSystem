@@ -2,7 +2,7 @@
     <x-slot:header>
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Tambah User</h1>
-            <a href="#" class="text-sm text-primary hover:text-primary-dark">Kembali</a>
+            <a href="{{ route('admin.users.index') }}" class="text-sm text-primary hover:text-primary-dark">Kembali</a>
         </div>
     </x-slot:header>
 

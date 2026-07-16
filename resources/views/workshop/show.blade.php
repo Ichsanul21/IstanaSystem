@@ -98,7 +98,7 @@
                 <form method="POST" action="{{ route('admin.workshop.update-status', $item->id) }}" class="space-y-4"
                       x-ref="statusForm"
                       @submit.prevent="
-                          $refs.statusForm.$el.submit();
+                          $refs.statusForm.submit();
                           $dispatch('status-updated');
                       ">
                     @csrf

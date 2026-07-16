@@ -58,7 +58,7 @@
                 <form method="POST" action="{{ route('admin.inventory.stock.deduct', $item) }}" class="space-y-4">
                     @csrf
                     <x-ui.input name="quantity" label="Jumlah" type="number" step="0.01" min="0.01" required help="Jumlah stok yang akan dikeluarkan" />
-                    <x-ui.textarea name="notes" label="Catatan" rows="3" help="Alasan pengeluaran stok (opsional)" />
+                    <x-ui.textarea name="reference" label="Catatan" rows="3" help="Alasan pengeluaran stok (opsional)" />
                     <div class="flex items-center justify-end gap-3 border-t border-gray-200 dark:border-gray-700 pt-4">
                         <x-ui.button href="{{ route('admin.inventory.show', $item) }}" variant="ghost">Batal</x-ui.button>
                         <x-ui.button type="submit" variant="primary">Keluarkan Stok</x-ui.button>

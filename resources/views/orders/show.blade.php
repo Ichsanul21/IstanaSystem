@@ -51,7 +51,7 @@
                     </div>
                     <div>
                         <dt class="text-sm text-gray-500 dark:text-gray-400">Estimasi Selesai</dt>
-                        <dd class="text-sm font-medium text-gray-900 dark:text-white">{{ $order->items->first()?->servicePricing?->estimated_days ? now()->addDays($order->items->first()->servicePricing->estimated_days)->format('d/m/Y') : '-' }}</dd>
+                        <dd class="text-sm font-medium text-gray-900 dark:text-white">{{ $order->finished_at ? \Carbon\Carbon::parse($order->finished_at)->format('d/m/Y') : '-' }}</dd>
                     </div>
                 </dl>
                 @if($order->notes ?? $order['notes'] ?? null)
@@ -79,10 +79,10 @@
                         <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900">
                             @forelse($order->items ?? $order['items'] ?? [] as $item)
                                 <tr>
-                                    <td class="px-4 py-3 text-sm text-gray-900 dark:text-white">{{ $item->service_name ?? $item['service_name'] ?? '-' }}</td>
-                                    <td class="px-4 py-3 text-sm text-center text-gray-700 dark:text-gray-300">{{ $item->quantity ?? $item['quantity'] ?? 1 }}</td>
-                                    <td class="px-4 py-3 text-sm text-right text-gray-700 dark:text-gray-300">Rp {{ number_format($item->unit_price ?? $item['unit_price'] ?? 0, 0, ',', '.') }}</td>
-                                    <td class="px-4 py-3 text-sm text-right font-medium text-gray-900 dark:text-white">Rp {{ number_format(($item->quantity ?? 1) * ($item->unit_price ?? 0), 0, ',', '.') }}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-900 dark:text-white">{{ $item->service?->name ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-sm text-center text-gray-700 dark:text-gray-300">{{ $item->quantity ?? 1 }}</td>
+                                    <td class="px-4 py-3 text-sm text-right text-gray-700 dark:text-gray-300">Rp {{ number_format($item->price_per_unit ?? 0, 0, ',', '.') }}</td>
+                                    <td class="px-4 py-3 text-sm text-right font-medium text-gray-900 dark:text-white">Rp {{ number_format($item->subtotal ?? 0, 0, ',', '.') }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -93,7 +93,7 @@
                         <tfoot class="bg-gray-50 dark:bg-gray-800">
                             <tr>
                                 <td colspan="3" class="px-4 py-3 text-sm font-semibold text-right text-gray-900 dark:text-white">Total</td>
-                                <td class="px-4 py-3 text-sm font-bold text-right text-primary">Rp {{ number_format($order->total ?? $order['total'] ?? 0, 0, ',', '.') }}</td>
+                                <td class="px-4 py-3 text-sm font-bold text-right text-primary">Rp {{ number_format($order->grand_total ?? 0, 0, ',', '.') }}</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -136,11 +136,11 @@
                 <dl class="space-y-3">
                     <div class="flex justify-between text-sm">
                         <span class="text-gray-500 dark:text-gray-400">Metode</span>
-                        <span class="font-medium text-gray-900 dark:text-white">{{ $order->payments->first()?->payment_method ?? '-' }}</span>
+                        <span class="font-medium text-gray-900 dark:text-white">{{ $order->payments->first()?->method ?? '-' }}</span>
                     </div>
                     <div class="flex justify-between text-sm">
                         <span class="text-gray-500 dark:text-gray-400">Total</span>
-                        <span class="font-medium text-gray-900 dark:text-white">Rp {{ number_format($order->total ?? $order['total'] ?? 0, 0, ',', '.') }}</span>
+                        <span class="font-medium text-gray-900 dark:text-white">Rp {{ number_format($order->grand_total ?? 0, 0, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between text-sm">
                         <span class="text-gray-500 dark:text-gray-400">Dibayar</span>
@@ -164,7 +164,7 @@
                     @forelse($order->items ?? $order['items'] ?? [] as $item)
                         <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
                             <div class="flex items-center justify-between mb-2">
-                                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $item->service_name ?? $item['service_name'] ?? '-' }}</p>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $item->service?->name ?? '-' }}</p>
                                 @php
                                     $ps = $item->production_status ?? $item['production_status'] ?? 'received';
                                     $psm = ['draft' => 'gray', 'pending' => 'warning', 'received' => 'gray', 'washed' => 'info', 'dried' => 'warning', 'ironed' => 'primary', 'packed' => 'info', 'ready_for_pickup' => 'success', 'picked_up' => 'success', 'cancelled' => 'danger'];
@@ -174,7 +174,7 @@
                             </div>
                             <div class="flex justify-center">
                                 <div class="bg-white dark:bg-gray-800 p-2 rounded border border-gray-200 dark:border-gray-700">
-                                    {!! $item->qr_code ?? $item['qr_code'] ?? '<div class="w-20 h-20 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs text-gray-500">QR</div>' !!}
+                                    {!! $item->qr_token ? '<div class="w-20 h-20 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs text-gray-500">QR</div>' : '<div class="w-20 h-20 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs text-gray-500">QR</div>' !!}
                                 </div>
                             </div>
                         </div>

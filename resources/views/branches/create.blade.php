@@ -2,7 +2,7 @@
     <x-slot:header>
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Tambah Cabang</h1>
-            <a href="#" class="text-sm text-primary hover:text-primary-dark">Kembali</a>
+            <a href="{{ route('admin.branches.index') }}" class="text-sm text-primary hover:text-primary-dark">Kembali</a>
         </div>
     </x-slot:header>
 
@@ -17,8 +17,12 @@
                 <x-ui.textarea name="address" label="Alamat" rows="2" placeholder="Jl. Contoh No. 123, Kota" />
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <x-ui.input name="phone" label="Telepon" placeholder="021-12345678" />
-                    <x-ui.input name="email" label="Email" type="email" placeholder="cabang@istanalaundry.com" />
                     <x-ui.select name="workshop_id" label="Workshop" :options="$workshops->pluck('name', 'id')->prepend('Pilih Workshop', '')->toArray()" />
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <x-ui.input name="opening_time" label="Jam Buka" type="time" />
+                    <x-ui.input name="closing_time" label="Jam Tutup" type="time" />
+                    <x-ui.input name="daily_capacity" label="Kapasitas Harian" type="number" min="1" />
                 </div>
                 <div>
                     <x-ui.label for="is_active">Status</x-ui.label>

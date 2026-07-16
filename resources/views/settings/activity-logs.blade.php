@@ -4,8 +4,8 @@
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Activity Logs</h1>
             @can('view_activity_logs')
                 <div class="flex items-center gap-2">
-                    <x-ui.button href="{{ route('admin.audit.export', 'excel') }}" variant="outline" size="sm">Export Excel</x-ui.button>
-                    <x-ui.button href="{{ route('admin.audit.export', 'pdf') }}" variant="outline" size="sm">Export PDF</x-ui.button>
+                    <x-ui.button href="{{ route('admin.audit.export', ['export' => 'excel']) }}" variant="outline" size="sm">Export Excel</x-ui.button>
+                    <x-ui.button href="{{ route('admin.audit.export', ['export' => 'excel']) }}" variant="outline" size="sm">Export PDF</x-ui.button>
                 </div>
             @endcan
         </div>

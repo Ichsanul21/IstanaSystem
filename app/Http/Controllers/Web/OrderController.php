@@ -63,7 +63,7 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $order->load(['items.servicePricing.service', 'payments', 'refunds', 'customer']);
+        $order->load(['items.service', 'payments', 'refunds', 'customer']);
 
         $statusTimeline = $order->items->flatMap->statusLogs->sortBy('created_at');
 

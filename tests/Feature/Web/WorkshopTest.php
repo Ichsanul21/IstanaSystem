@@ -70,7 +70,7 @@ class WorkshopTest extends TestCase
             ->post(route('admin.workshop.update-status', $item), [
                 'status' => 'TERIMA',
             ])
-            ->assertRedirect(route('admin.workshop.items.show', $item));
+            ->assertRedirect(route('admin.workshop.index'));
 
         $this->assertDatabaseHas('order_item_status_logs', [
             'order_item_id' => $item->id,

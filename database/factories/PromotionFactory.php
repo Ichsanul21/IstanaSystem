@@ -14,7 +14,7 @@ class PromotionFactory extends Factory
         return [
             'code' => strtoupper(fake()->bothify('PRM-####')),
             'name' => fake()->words(3, true),
-            'type' => fake()->randomElement(['percentage', 'fixed', 'buy_x_get_y']),
+            'type' => fake()->randomElement(['percentage', 'fixed', 'buy_get']),
             'value' => fake()->numberBetween(5, 50),
             'min_order_amount' => fake()->numberBetween(0, 50000),
             'max_discount_amount' => fake()->optional()->numberBetween(5000, 20000),

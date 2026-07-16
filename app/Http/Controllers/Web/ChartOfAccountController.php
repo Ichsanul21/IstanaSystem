@@ -26,6 +26,7 @@ class ChartOfAccountController extends Controller
             'code' => 'required|string|max:20|unique:chart_of_accounts,code',
             'name' => 'required|string|max:255',
             'category' => 'required|string|in:asset,liability,equity,revenue,expense',
+            'normal_balance' => 'nullable|string|in:debit,credit',
             'is_active' => 'boolean',
         ]);
 
@@ -45,6 +46,7 @@ class ChartOfAccountController extends Controller
             'code' => 'required|string|max:20|unique:chart_of_accounts,code,' . $chartOfAccount->id,
             'name' => 'required|string|max:255',
             'category' => 'required|string|in:asset,liability,equity,revenue,expense',
+            'normal_balance' => 'nullable|string|in:debit,credit',
             'is_active' => 'boolean',
         ]);
 

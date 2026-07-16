@@ -48,14 +48,14 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
     // ===== ADMIN (NO BRANCH) — system-wide routes =====
 
+    // Gateway Configuration (global) — must be before /settings/{group} wildcard
+    Route::get('/settings/gateway', [GatewayConfigurationController::class, 'index'])->middleware('permission:manage_gateway_config')->name('settings.gateway');
+    Route::post('/settings/gateway', [GatewayConfigurationController::class, 'update'])->middleware('permission:manage_gateway_config')->name('settings.gateway.update');
+
     // Settings (global)
     Route::get('/settings', [SettingsController::class, 'index'])->middleware('permission:settings.read|settings.update|edit_global_settings')->name('settings.index');
     Route::get('/settings/{group}', [SettingsController::class, 'group'])->middleware('permission:settings.read')->name('settings.group');
     Route::post('/settings/{group}', [SettingsController::class, 'updateGroup'])->middleware('permission:settings.update')->name('settings.group.update');
-
-    // Gateway Configuration (global)
-    Route::get('/settings/gateway', [GatewayConfigurationController::class, 'index'])->middleware('permission:manage_gateway_config')->name('settings.gateway');
-    Route::post('/settings/gateway', [GatewayConfigurationController::class, 'update'])->middleware('permission:manage_gateway_config')->name('settings.gateway.update');
 
     // Audit & Activity Logs
     Route::get('/audit', [AuditController::class, 'index'])->middleware('permission:view_activity_logs')->name('audit.index');
@@ -112,13 +112,21 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::post('/refunds/{refund}/complete', [RefundController::class, 'complete'])->middleware('permission:process_refund')->name('refunds.complete');
         Route::post('/refunds/{refund}/reject', [RefundController::class, 'reject'])->middleware('permission:approve_refund')->name('refunds.reject');
 
-        // Workshop
+        // Workshop (production)
         Route::get('/workshop', [WorkshopController::class, 'index'])->middleware('permission:workshop.read')->name('workshop.index');
         Route::get('/workshop/scan', [WorkshopController::class, 'scan'])->middleware('permission:workshop.scan')->name('workshop.scan');
         Route::post('/workshop/scan', [WorkshopController::class, 'lookup'])->middleware('permission:workshop.scan')->name('workshop.lookup');
         Route::get('/workshop/orders/{order}', [WorkshopController::class, 'orderDetail'])->middleware('permission:workshop.read')->name('workshop.order-detail');
         Route::post('/workshop/items/{orderItem}/status', [WorkshopController::class, 'updateStatus'])->middleware('permission:workshop.update_status|quality_check')->name('workshop.update-status');
         Route::get('/workshop/items/{orderItem}', [WorkshopController::class, 'show'])->middleware('permission:workshop.read')->name('workshop.items.show');
+
+        // Workshop CRUD (entity management)
+        Route::get('/workshops', [WorkshopController::class, 'list'])->middleware('permission:manage_workshops')->name('workshops.index');
+        Route::get('/workshops/create', [WorkshopController::class, 'create'])->middleware('permission:manage_workshops')->name('workshops.create');
+        Route::post('/workshops', [WorkshopController::class, 'store'])->middleware('permission:manage_workshops')->name('workshops.store');
+        Route::get('/workshops/{workshop}/edit', [WorkshopController::class, 'edit'])->middleware('permission:manage_workshops')->name('workshops.edit');
+        Route::put('/workshops/{workshop}', [WorkshopController::class, 'update'])->middleware('permission:manage_workshops')->name('workshops.update');
+        Route::delete('/workshops/{workshop}', [WorkshopController::class, 'destroy'])->middleware('permission:manage_workshops')->name('workshops.destroy');
 
         // Promotions
         Route::resource('promotions', PromotionController::class)->middleware('permission:promotion.read|promotion.create|promotion.update|promotion.delete');
@@ -135,10 +143,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::get('/inventory/{item}/stock-out', [InventoryStockController::class, 'out'])->middleware('permission:stock_out')->name('inventory.stock.out');
         Route::post('/inventory/{item}/stock-out', [InventoryStockController::class, 'deduct'])->middleware('permission:stock_out')->name('inventory.stock.deduct');
 
-        // Services
-        Route::resource('services', ServiceController::class)->middleware('permission:view_services|create_services|edit_services');
-
-        // Service Pricings
+        // Service Pricings — must be before services resource to avoid /services/{service} shadowing /services/pricing
         Route::prefix('services/pricing')->name('services.pricing.')->middleware('permission:edit_service_pricing')->group(function () {
             Route::get('/', [ServicePricingController::class, 'index'])->name('index');
             Route::get('/create', [ServicePricingController::class, 'create'])->name('create');
@@ -147,6 +152,9 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
             Route::put('/{pricing}', [ServicePricingController::class, 'update'])->name('update');
             Route::delete('/{pricing}', [ServicePricingController::class, 'destroy'])->name('destroy');
         });
+
+        // Services
+        Route::resource('services', ServiceController::class)->except(['show'])->middleware('permission:view_services|create_services|edit_services');
 
         // Finance
         Route::prefix('finance')->name('finance.')->middleware('permission:finance.read|create_manual_journal|manage_accounting_periods|manage_expenses')->group(function () {
@@ -218,6 +226,6 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         });
 
         // Membership Tiers
-        Route::resource('membership-tiers', MembershipTierController::class)->only(['index', 'edit', 'update'])->middleware('permission:manage_tiers');
+        Route::resource('membership-tiers', MembershipTierController::class)->only(['index', 'create', 'store', 'edit', 'update'])->middleware('permission:manage_tiers');
     });
 });

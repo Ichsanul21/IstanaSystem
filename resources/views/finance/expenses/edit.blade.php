@@ -20,12 +20,7 @@
                         <x-ui.input name="posted_at" label="Tanggal" type="date" required :value="old('posted_at', $expense->posted_at->format('Y-m-d'))" />
                     </div>
                     <x-ui.textarea name="description" label="Deskripsi" rows="3" required>{{ old('description', $expense->description) }}</x-ui.textarea>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <x-ui.input name="amount" label="Jumlah" type="number" step="0.01" min="0" required :value="old('amount', $expense->amount)" />
-                        <x-ui.select name="payment_method" label="Metode Pembayaran" :options="['cash' => 'Cash', 'transfer' => 'Transfer', 'credit_card' => 'Credit Card', 'other' => 'Lainnya']" placeholder="Pilih Metode" :value="old('payment_method', $expense->payment_method)" />
-                    </div>
-                    <x-ui.input name="reference" label="Referensi" :value="old('reference', $expense->reference)" help="No. invoice / nota (opsional)" />
-                    <x-ui.textarea name="notes" label="Catatan" rows="2" help="Catatan tambahan (opsional)">{{ old('notes', $expense->notes) }}</x-ui.textarea>
+                    <x-ui.input name="amount" label="Jumlah" type="number" step="0.01" min="0" required :value="old('amount', $expense->amount)" />
                     <div class="flex items-center justify-end gap-3 border-t border-gray-200 dark:border-gray-700 pt-4">
                         <x-ui.button href="{{ route('admin.finance.expenses.index') }}" variant="ghost">Batal</x-ui.button>
                         <x-ui.button type="submit" variant="primary">Simpan</x-ui.button>

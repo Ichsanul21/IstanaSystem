@@ -11,15 +11,11 @@
     </x-slot:header>
 
     @php
-        $columns = [
-            'received' => 'Diterima',
-            'washed' => 'Dicuci',
-            'dried' => 'Dikeringkan',
-            'ironed' => 'Disetrika',
-            'packed' => 'Dikemas',
-            'ready_for_pickup' => 'Siap Ambil',
-            'picked_up' => 'Selesai',
-        ];
+        $statuses = \App\Enums\ProductionStatus::ordered();
+        $columns = [];
+        foreach ($statuses as $s) {
+            $columns[$s->value] = $s->label();
+        }
     @endphp
 
     <div x-data="workshopBoard()" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 overflow-x-auto pb-4">
@@ -31,18 +27,26 @@
                 </div>
                 <div class="space-y-2 min-h-[200px]">
                     @forelse($grouped[$key] ?? [] as $item)
-                        <div class="bg-white dark:bg-gray-700 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-600 cursor-pointer hover:border-primary/50 transition-colors"
-                             x-on:click="window.location.href='{{ route('admin.workshop.items.show', $item) }}'">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $item->service?->name ?? $item['service_name'] ?? 'Item' }}</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">#{{ $item->order_number ?? $item['order_number'] ?? '-' }}</p>
-                            <p class="text-xs text-gray-400 mt-1">{{ $item->time_elapsed ?? $item['time_elapsed'] ?? '' }}</p>
+                        <div class="bg-white dark:bg-gray-700 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-600">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $item->service?->name ?? $item['service_name'] ?? 'Item' }}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">#{{ $item->order_number ?? $item['order_number'] ?? '-' }}</p>
+                                    <p class="text-xs text-gray-400">{{ $item->time_elapsed ?? $item['time_elapsed'] ?? '' }}</p>
+                                </div>
+                                <a href="{{ route('admin.workshop.items.show', $item) }}"
+                                   class="shrink-0 text-gray-400 hover:text-primary transition-colors"
+                                   title="Detail">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
+                                </a>
+                            </div>
                             @if($key !== 'picked_up')
                                 @canany(['workshop.update_status', 'quality_check'])
-                                <form method="POST" action="{{ route('admin.workshop.update-status', $item->id ?? $item['id']) }}" class="mt-2" x-on:click.stop>
+                                <form method="POST" action="{{ route('admin.workshop.update-status', $item->id ?? $item['id']) }}" class="mt-2">
                                     @csrf
                                     @php
-                                        $nextMap = ['received' => 'washed', 'washed' => 'dried', 'dried' => 'ironed', 'ironed' => 'packed', 'packed' => 'ready_for_pickup', 'ready_for_pickup' => 'picked_up'];
-                                        $nextStatus = $nextMap[$key] ?? 'picked_up';
+                                        $currentEnum = \App\Enums\ProductionStatus::tryFrom($key);
+                                        $nextStatus = $currentEnum?->next()?->value ?? 'SIAP';
                                     @endphp
                                     <input type="hidden" name="status" value="{{ $nextStatus }}">
                                     <x-ui.button type="submit" size="sm" variant="primary" class="w-full text-xs">Lanjutkan</x-ui.button>

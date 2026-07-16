@@ -35,7 +35,7 @@ class CustomerController extends Controller
 
     public function create()
     {
-        $tiers = MembershipTier::where('is_active', true)->get();
+        $tiers = MembershipTier::where('is_active', true)->pluck('name', 'id');
 
         return view('customers.create', compact('tiers'));
     }
@@ -51,7 +51,7 @@ class CustomerController extends Controller
             'membership_tier_id' => $request->membership_tier_id,
             'branch_id' => currentBranchId(),
             'total_points' => 0,
-            'lifetime_spending' => 0,
+            'total_purchase' => 0,
             'is_active' => true,
         ]);
 
@@ -71,7 +71,7 @@ class CustomerController extends Controller
 
     public function edit(Customer $customer)
     {
-        $tiers = MembershipTier::where('is_active', true)->get();
+        $tiers = MembershipTier::where('is_active', true)->pluck('name', 'id');
 
         return view('customers.edit', compact('customer', 'tiers'));
     }
@@ -155,7 +155,7 @@ class CustomerController extends Controller
             'phone' => $data['phone'] ?? null,
             'branch_id' => currentBranchId(),
             'total_points' => 0,
-            'lifetime_spending' => 0,
+            'total_purchase' => 0,
             'is_active' => true,
         ]);
 

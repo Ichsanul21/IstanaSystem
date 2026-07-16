@@ -20,6 +20,11 @@
                 <x-ui.input name="min_stock" label="Min. Stok" type="number" min="0" value="{{ old('min_stock', $item->min_stock) }}" />
             </div>
             <x-ui.textarea name="description" label="Deskripsi" rows="3">{{ old('description', $item->description) }}</x-ui.textarea>
+            <div class="flex items-center gap-2">
+                <input type="hidden" name="is_active" value="0">
+                <input type="checkbox" name="is_active" value="1" {{ old('is_active', $item->is_active) ? 'checked' : '' }} id="is_active" class="rounded border-gray-300 text-primary focus:ring-primary">
+                <x-ui.label for="is_active" class="!mb-0">Aktif</x-ui.label>
+            </div>
             <div class="flex items-center gap-3 border-t border-gray-200 dark:border-gray-700 pt-6">
                 <x-ui.button type="submit" variant="primary">Simpan</x-ui.button>
                 <x-ui.button href="{{ route('admin.inventory.show', $item) }}" variant="secondary">Batal</x-ui.button>

@@ -42,13 +42,13 @@
                     <td class="px-6 py-4">
                         @if(($refund->status ?? $refund['status'] ?? '') === 'pending')
                             <div class="flex items-center gap-1">
-                                @can('approve_refunds')
+                                @can('approve_refund')
                                 <form method="POST" action="{{ route('admin.refunds.approve', $refund->id ?? $refund['id']) }}" class="inline">
                                     @csrf
                                     <x-ui.button type="submit" variant="primary" size="sm">Setujui</x-ui.button>
                                 </form>
                                 @endcan
-                                @can('reject_refunds')
+                                @can('approve_refund')
                                 <form method="POST" action="{{ route('admin.refunds.reject', $refund->id ?? $refund['id']) }}" class="inline">
                                     @csrf
                                     <x-ui.button type="submit" variant="danger" size="sm">Tolak</x-ui.button>
@@ -56,7 +56,7 @@
                                 @endcan
                             </div>
                         @elseif(($refund->status ?? $refund['status'] ?? '') === 'approved')
-                            @can('complete_refunds')
+                            @can('process_refund')
                             <form method="POST" action="{{ route('admin.refunds.complete', $refund->id ?? $refund['id']) }}" class="inline">
                                 @csrf
                                 <x-ui.button type="submit" variant="primary" size="sm">Selesaikan</x-ui.button>

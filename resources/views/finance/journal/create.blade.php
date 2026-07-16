@@ -2,7 +2,7 @@
     <x-slot:header>
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Tambah Jurnal Manual</h1>
-            <a href="#" class="text-sm text-primary hover:text-primary-dark">Kembali ke Jurnal</a>
+            <a href="{{ route('admin.finance.journal') }}" class="text-sm text-primary hover:text-primary-dark">Kembali ke Jurnal</a>
         </div>
     </x-slot:header>
 

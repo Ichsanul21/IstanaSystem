@@ -21,7 +21,7 @@
                 @php
                     $types = ['asset' => 'Asset', 'liability' => 'Liability', 'equity' => 'Equity', 'revenue' => 'Revenue', 'expense' => 'Expense'];
                 @endphp
-                <x-ui.select name="type" label="Tipe" :options="$types" placeholder="Pilih Tipe" required :value="old('type', $account->type)" />
+                <x-ui.select name="category" label="Tipe" :options="$types" placeholder="Pilih Tipe" required :value="old('category', $account->category)" />
                 <x-ui.select name="normal_balance" label="Saldo Normal" :options="['debit' => 'Debit', 'credit' => 'Credit']" placeholder="Pilih Saldo Normal" required :value="old('normal_balance', $account->normal_balance)" />
             </div>
             <label class="flex items-center gap-2">

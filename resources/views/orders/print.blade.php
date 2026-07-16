@@ -93,7 +93,7 @@
     </div>
 
     <div class="qrcode">
-        <div style="font-size:10px;">Track: {{ url('/track/' . $order->qr_token ?? $order->order_number) }}</div>
+        <div style="font-size:10px;">Track: {{ url('/track/' . ($order->qr_token ?? $order->order_number)) }}</div>
     </div>
 
     <div class="footer">

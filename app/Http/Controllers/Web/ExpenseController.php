@@ -24,14 +24,16 @@ class ExpenseController extends Controller
             ->latest()
             ->paginate(15);
 
-        $categories = Expense::forCurrentBranch()->select('category')->distinct()->pluck('category');
+        $categories = Expense::forCurrentBranch()->select('category')->distinct()->pluck('category')->mapWithKeys(fn($c) => [$c => $c]);
 
         return view('finance.expenses.index', compact('expenses', 'categories'));
     }
 
     public function create()
     {
-        return view('finance.expenses.create');
+        $categories = collect(['Operasional', 'Utilities', 'Maintenance', 'Supplies', 'Gaji', 'Marketing', 'Lainnya'])->mapWithKeys(fn($c) => [$c => $c]);
+
+        return view('finance.expenses.create', compact('categories'));
     }
 
     public function store(Request $request)
@@ -41,9 +43,6 @@ class ExpenseController extends Controller
             'description' => 'nullable|string|max:500',
             'amount' => 'required|numeric|min:0',
             'posted_at' => 'required|date',
-            'payment_method' => 'nullable|string|max:50',
-            'reference' => 'nullable|string|max:100',
-            'notes' => 'nullable|string|max:1000',
         ]);
 
         $data['branch_id'] = currentBranchId();
@@ -58,7 +57,9 @@ class ExpenseController extends Controller
 
     public function edit(Expense $expense)
     {
-        return view('finance.expenses.edit', compact('expense'));
+        $categories = collect(['Operasional', 'Utilities', 'Maintenance', 'Supplies', 'Gaji', 'Marketing', 'Lainnya'])->mapWithKeys(fn($c) => [$c => $c]);
+
+        return view('finance.expenses.edit', compact('expense', 'categories'));
     }
 
     public function update(Request $request, Expense $expense)
@@ -68,9 +69,6 @@ class ExpenseController extends Controller
             'description' => 'nullable|string|max:500',
             'amount' => 'required|numeric|min:0',
             'posted_at' => 'required|date',
-            'payment_method' => 'nullable|string|max:50',
-            'reference' => 'nullable|string|max:100',
-            'notes' => 'nullable|string|max:1000',
         ]);
 
         $expense->update($data);
@@ -92,11 +90,11 @@ class ExpenseController extends Controller
     protected function createExpenseJournalEntry(Expense $expense, bool $isUpdate = false): void
     {
         try {
-            $expenseAccount = ChartOfAccount::where('type', 'expense')
+            $expenseAccount = ChartOfAccount::where('category', 'expense')
                 ->where('is_active', true)
                 ->first();
 
-            $assetAccount = ChartOfAccount::where('type', 'asset')
+            $assetAccount = ChartOfAccount::where('category', 'asset')
                 ->where('is_active', true)
                 ->first();
 

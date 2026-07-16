@@ -147,14 +147,14 @@
                     @csrf
                     <input type="hidden" name="customer_id" x-bind:value="selectedCustomer?.id">
                     <template x-for="(item, index) in cart" :key="index">
-                        <input type="hidden" :name="'items['+index+'][service_id]'" x-model="item.id">
-                        <input type="hidden" :name="'items['+index+'][quantity]'" x-model="item.qty">
-                        <input type="hidden" :name="'items['+index+'][price_per_unit]'" x-model="item.price">
+                        <input type="hidden" :name="'items['+index+'][service_pricing_id]'" :value="item.id">
+                        <input type="hidden" :name="'items['+index+'][quantity]'" :value="item.qty">
+                        <input type="hidden" :name="'items['+index+'][price_per_unit]'" :value="item.price">
                     </template>
                     <div>
                         <x-ui.label>Kode Promo</x-ui.label>
                         <div class="flex gap-2 mt-1">
-                    <input type="hidden" name="promotion_code" x-model="promoCode">
+                    <input type="hidden" name="promotion_code" :value="promoCode">
                     <x-ui.input type="text" placeholder="Masukkan kode promo" class="flex-1" x-model="promoCode" x-bind:disabled="promoApplied" />
                     <x-ui.button type="button" variant="outline" size="sm" x-on:click="checkPromo" x-text="promoApplied ? 'Ganti' : 'Pakai'"></x-ui.button>
                         </div>
@@ -162,7 +162,7 @@
                             <p class="mt-1 text-xs" x-bind:class="promoError ? 'text-red-600' : 'text-green-600'" x-text="promoMessage"></p>
                         </template>
                     </div>
-                    <x-ui.select name="method" label="Metode Pembayaran" :options="['cash' => 'Tunai', 'transfer' => 'Transfer Bank', 'qris' => 'QRIS', 'gateway' => 'Payment Gateway']" required />
+                    <x-ui.select name="payment_method" label="Metode Pembayaran" :options="['cash' => 'Tunai', 'transfer' => 'Transfer Bank', 'qris' => 'QRIS', 'gateway' => 'Payment Gateway']" required />
                     <div>
                         <x-ui.input type="number" name="paid_amount" label="Jumlah Dibayar" required x-model="paidAmount" />
                         <template x-if="paidAmount > 0 && paidAmount >= total">

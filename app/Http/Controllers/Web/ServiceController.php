@@ -8,12 +8,6 @@ use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('role:Developer,Super Admin,Branch Admin')->only(['index']);
-        $this->middleware('role:Developer,Super Admin')->except(['index']);
-    }
-
     public function index()
     {
         $services = Service::when(request('search'), function ($query, $search) {

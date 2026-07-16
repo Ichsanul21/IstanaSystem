@@ -239,14 +239,14 @@
                 </div>
             </x-ui.card>
 
-            @if($orderItem && $orderItem->qr_code)
+            @if($orderItem && $orderItem->qr_token)
                 <x-ui.card>
                     <x-slot:header>
                         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">QR Code</h2>
                     </x-slot:header>
                     <div class="flex justify-center">
                         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
-                            {!! $orderItem->qr_code !!}
+                            {{ $orderItem->qr_token }}
                         </div>
                     </div>
                 </x-ui.card>

@@ -54,11 +54,11 @@ class ReportController extends Controller
     {
         $totalCustomers = Customer::forCurrentBranch()->count();
         $totalOrders = Order::forCurrentBranch()->count();
-        $totalRevenue = Order::forCurrentBranch()->sum('total');
+        $totalRevenue = Order::forCurrentBranch()->sum('grand_total');
 
         $customers = Customer::forCurrentBranch()
             ->withCount('orders')
-            ->withSum('orders', 'total')
+            ->withSum('orders', 'grand_total')
             ->latest()
             ->paginate(15);
 
@@ -82,14 +82,13 @@ class ReportController extends Controller
 
     public function tax()
     {
-        $query = TaxLog::whereHas('order', fn($q) => $q->forCurrentBranch())
-            ->when(request('date_from'), fn($q, $v) => $q->whereDate('created_at', '>=', $v))
+        $query = TaxLog::when(request('date_from'), fn($q, $v) => $q->whereDate('created_at', '>=', $v))
             ->when(request('date_to'), fn($q, $v) => $q->whereDate('created_at', '<=', $v));
 
         $totalTax = (clone $query)->sum('tax_amount');
-        $totalTaxable = (clone $query)->sum('tax_base');
+        $totalTaxable = (clone $query)->sum('base_amount');
 
-        $logs = $query->with(['order', 'taxConfig'])->latest()->paginate(15);
+        $logs = $query->with(['journalEntry'])->latest()->paginate(15);
 
         return view('reports.tax', compact('logs', 'totalTax', 'totalTaxable'));
     }

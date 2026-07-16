@@ -30,6 +30,7 @@ class RolePermissionSeeder extends Seeder
             'process_refund', 'approve_refund',
             // Workshop
             'workshop.read', 'workshop.scan', 'workshop.update_status', 'quality_check',
+            'manage_workshops',
             // Promotions
             'promotion.create', 'promotion.read', 'promotion.update', 'promotion.delete',
             'toggle_promotion_branch',
@@ -49,6 +50,9 @@ class RolePermissionSeeder extends Seeder
             'manage_gateway_config',
             // CRM
             'manage_tiers', 'manage_loyalty_settings',
+            'membership.create', 'membership.update',
+            // Finance granular (for view-level @can checks)
+            'finance.access', 'finance.coa', 'finance.journal', 'finance.period', 'finance.expense',
             // Notifications
             'send_wa_notification',
             // Audit & Backup
@@ -92,6 +96,7 @@ class RolePermissionSeeder extends Seeder
             'workshop.read',
             'report.read', 'report.export',
             'finance.read', 'view_financial_reports', 'view_journal_entries',
+            'finance.access', 'finance.coa', 'finance.journal',
             'settings.read',
             'manage_loyalty_settings', 'manage_tax_config',
             'view_activity_logs',
@@ -120,7 +125,8 @@ class RolePermissionSeeder extends Seeder
             'finance.read', 'view_financial_reports', 'view_journal_entries',
             'create_manual_journal', 'manage_accounting_periods', 'manage_tax_config',
             'view_services', 'create_services', 'edit_services',
-            'manage_tiers',
+            'manage_tiers', 'membership.create', 'membership.update',
+            'finance.access', 'finance.coa', 'finance.journal', 'finance.period', 'finance.expense',
             'view_activity_logs',
             'export_data',
             'switch_branch',
@@ -147,6 +153,7 @@ class RolePermissionSeeder extends Seeder
             'report.read', 'report.export',
             'settings.read', 'view_settings',
             'finance.read', 'view_financial_reports', 'view_journal_entries',
+            'finance.access', 'finance.journal', 'finance.expense',
             'manage_expenses',
             'view_services', 'edit_services', 'edit_service_pricing',
             'send_wa_notification',
